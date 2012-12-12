@@ -1,0 +1,22 @@
+<resources>
+
+    <string name="app_name">Bike Polo Random</string><string name="app_name_2line">Bike Polo\nRandomizer</string>
+    <string name="menu_settings">Settings</string>
+    <string name="addPlayer">Add</string>
+    <string name="nextGame">Play</string>
+    <string name="NULL" />
+    <string name="zero">0</string>
+    <string name="enterName">Enter Player Name</string>
+    <string name="removePlayer">Remove  </string>
+    <string name="playerExists">Player already exists.</string>
+    <string name="resetGameCnt">Reset Game Counters</string>
+    <string name="resetGameCntShort">Reset Games</string>
+    <string name="removeAllPlayers">Remove All Players</string>
+    <string name="removeAllPlayersShrt">Remove Players</string>
+    <string name="resetGameCntResult">All game counters reset.</string>
+    <string name="removeAllPlayersResult">All players removed.</string>
+    <string name="playQ">Play?</string>
+    <string name="name">Name</string>
+    <string name="games">Games</string>
+
+</resources>

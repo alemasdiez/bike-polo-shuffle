@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="left" >
+    <CheckBox android:id="@+id/checkboxInPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/NULL"
+        android:checked="true"
+        android:onClick="checkboxInPlayClick"
+        />
+
+    <TextView
+        android:id="@+id/playerNameOnList"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip"        
+        android:text="@string/NULL" />
+   
+    <TextView
+        android:id="@+id/gamesPlayedOnList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="5dip"
+        android:text="@string/zero" />
+</LinearLayout>
