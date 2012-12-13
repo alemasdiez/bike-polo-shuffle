@@ -17,7 +17,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1.0"
         android:paddingLeft="5dip"
-        android:paddingRight="5dip"        
+        android:paddingRight="5dip"
+        android:duplicateParentState="true"        
         android:text="@string/NULL" />
    
     <TextView

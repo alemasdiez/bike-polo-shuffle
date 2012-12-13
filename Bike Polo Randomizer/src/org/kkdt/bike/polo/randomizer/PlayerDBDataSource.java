@@ -14,7 +14,7 @@ public class PlayerDBDataSource {
 	  private SQLiteDatabase database;
 	  private BikePoloDataBaseHelper dbHelper;
 	  private String[] allColumns = { PlayerDataBase.ENTRY_ID, PlayerDataBase.PLAYER_NAME, 
-	      PlayerDataBase.PLAYER_GAMES, PlayerDataBase.PLAYER_GAMES_RANK, PlayerDataBase.PLAYER_INPLAY};
+	      PlayerDataBase.PLAYER_GAMES, PlayerDataBase.PLAYER_HANDICAP, PlayerDataBase.PLAYER_INPLAY};
 
 	  public PlayerDBDataSource(Context context) {
 	    dbHelper = new BikePoloDataBaseHelper(context);
@@ -28,14 +28,15 @@ public class PlayerDBDataSource {
 	    dbHelper.close();
 	  }
 
-	  public void insertPlayer(PlayerBikePolo player) {
+	  public void insertPlayer(BikePoloPlayer player) {
 		String name = player.getName();
 		int games = player.getGames();
+		int handicap = player.getHandicap();		
 		boolean inPlay = player.ifPlays(); 
 	    ContentValues values = new ContentValues();
 	    values.put(PlayerDataBase.PLAYER_NAME, name);
 	    values.put(PlayerDataBase.PLAYER_GAMES, games);
-	    values.put(PlayerDataBase.PLAYER_GAMES_RANK, games);
+	    values.put(PlayerDataBase.PLAYER_HANDICAP, handicap);
 	    long inPlayLong=0;
 	    if (inPlay) {inPlayLong=1;}
 	    values.put(PlayerDataBase.PLAYER_INPLAY, inPlayLong);
@@ -48,14 +49,15 @@ public class PlayerDBDataSource {
 	    cursor.close();
 	  }
 
-	  public void updatePlayer(PlayerBikePolo player) {
+	  public void updatePlayer(BikePoloPlayer player) {
 		String name = player.getName();
 		int games = player.getGames();
+		int handicap = player.getHandicap();
 		boolean inPlay = player.ifPlays(); 
 		String[] paramArray = {name};
 	    ContentValues values = new ContentValues();
 	    values.put(PlayerDataBase.PLAYER_GAMES, games);
-	    values.put(PlayerDataBase.PLAYER_GAMES_RANK, games);
+	    values.put(PlayerDataBase.PLAYER_HANDICAP, handicap);
 	    long inPlayLong=0;
 	    if (inPlay) {inPlayLong=1;}
 	    values.put(PlayerDataBase.PLAYER_INPLAY, inPlayLong);
@@ -74,15 +76,15 @@ public class PlayerDBDataSource {
 		  database.delete(PlayerDataBase.TABLE_NAME, PlayerDataBase.WHERE_NAME, paramArray);
 	  }
 
-	  public List<PlayerBikePolo> getAllPlayers() {
-	    List<PlayerBikePolo> players = new ArrayList<PlayerBikePolo>();
+	  public List<BikePoloPlayer> getAllPlayers() {
+	    List<BikePoloPlayer> players = new ArrayList<BikePoloPlayer>();
 
 	    Cursor cursor = database.query(PlayerDataBase.TABLE_NAME,
 	        allColumns, null, null, null, null, null);
 
 	    cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
-	      PlayerBikePolo player = cursorGetPlayer(cursor);
+	      BikePoloPlayer player = cursorGetPlayer(cursor);
 	      players.add(player);
 	      cursor.moveToNext();
 	    }
@@ -107,13 +109,13 @@ public class PlayerDBDataSource {
 		dbHelper.onUpgrade(database, 0, 0);  
 	  }
 	  
-	  private PlayerBikePolo cursorGetPlayer(Cursor cursor) {
+	  private BikePoloPlayer cursorGetPlayer(Cursor cursor) {
 		String name = cursor.getString(1);
 		int games = (int)cursor.getLong(2);
-//		int games_rank = (int)cursor.getLong(3);		
+		int games_handicap = (int)cursor.getLong(3);		
 		boolean inPlay = false;
 		if (cursor.getLong(4)>0) { inPlay = true; }
-	    PlayerBikePolo player = new PlayerBikePolo(name, games, inPlay);
+	    BikePoloPlayer player = new BikePoloPlayer(name, games, games_handicap, inPlay);
 	    return player;
 	  }
 }

@@ -24,13 +24,14 @@ public class RandomizerMain extends FragmentActivity {
 	public static final String PLAYER_NUMBER = "PLAYER_NUMBER";
 	private static final int MODE_RANDOM = 0;
 	private static final int MODE_EVEN = 1;
+	private static final String SUPER_ARIEL = "Super Ariel";
 	
 	private PlayerDBDataSource dataSource;
-	private List<PlayerBikePolo> players = new ArrayList<PlayerBikePolo>();
+	private List<BikePoloPlayer> players = new ArrayList<BikePoloPlayer>();
 		
-	private class PlayerAdapter extends ArrayAdapter<PlayerBikePolo> {		
+	private class PlayerAdapter extends ArrayAdapter<BikePoloPlayer> {		
 		
-		PlayerAdapter(Context context, List<PlayerBikePolo> players) {
+		PlayerAdapter(Context context, List<BikePoloPlayer> players) {
 			super(context, R.layout.list_player_item, players);
 		}
 		
@@ -41,7 +42,7 @@ public class RandomizerMain extends FragmentActivity {
 				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(R.layout.list_player_item, null);
 			}			
-			PlayerBikePolo shownPlayer = this.getItem(position);
+			BikePoloPlayer shownPlayer = this.getItem(position);
 			TextView playerName = (TextView) v.findViewById(R.id.playerNameOnList);
 			TextView playerGames = (TextView) v.findViewById(R.id.gamesPlayedOnList);
 			CheckBox playerInGame = (CheckBox) v.findViewById(R.id.checkboxInPlay);
@@ -56,7 +57,10 @@ public class RandomizerMain extends FragmentActivity {
 			String playerData = shownPlayer.getName(); 		
 			playerName.setText(playerData);
 			playerName.setTag(position);
-			playerData = "" + shownPlayer.getGames(); 
+			playerData = "" + shownPlayer.getGames();
+			if (shownPlayer.getHandicap() > 0) {
+				playerData += " (+" + shownPlayer.getHandicap() + ")";
+			}
 			playerGames.setText(playerData);
 			boolean ifPlaysData = shownPlayer.ifPlays();
 			playerInGame.setChecked(ifPlaysData);
@@ -110,18 +114,24 @@ public class RandomizerMain extends FragmentActivity {
     		Toast.makeText(getBaseContext(), getString(R.string.playerExists),
     				Toast.LENGTH_LONG).show();
     	} else {
-    		PlayerBikePolo newPlayer = new PlayerBikePolo(playerName); 
+    		int handicap = BikePoloPlayer.findMinGamesRank(players);;
+    		if (playerName.equals(SUPER_ARIEL)) {
+    			handicap -= 1;
+    			Toast.makeText(getBaseContext(), SUPER_ARIEL + " Mode",
+    					Toast.LENGTH_SHORT).show();
+    		} 
+    		BikePoloPlayer newPlayer = new BikePoloPlayer(playerName, handicap); 
         	dataSource.insertPlayer(newPlayer);
         	updatePlayers();
     	}    	
     }
     
-    private String[] drawPlayers(List<PlayerBikePolo> listPlayers) {
+    private String[] drawPlayers(List<BikePoloPlayer> listPlayers) {
     	final int NUM_PLAYERS = 6;
-    	List<PlayerBikePolo> playersInGame = new ArrayList<PlayerBikePolo>();    	
-    	List<PlayerBikePolo> listActivePlayers = new ArrayList<PlayerBikePolo>();    	
+    	List<BikePoloPlayer> playersInGame = new ArrayList<BikePoloPlayer>();    	
+    	List<BikePoloPlayer> listActivePlayers = new ArrayList<BikePoloPlayer>();    	
     	for (int i=0;i<listPlayers.size();i++) {
-    		PlayerBikePolo currPlayer = listPlayers.get(i);
+    		BikePoloPlayer currPlayer = listPlayers.get(i);
     		if (currPlayer.ifPlays()) {
     			listActivePlayers.add(currPlayer);
     		}
@@ -133,7 +143,7 @@ public class RandomizerMain extends FragmentActivity {
     	}
     	String[] playersInGameNames = new String[playersInGame.size()];
 		for (int i=0; i< playersInGame.size(); i++) {
-			PlayerBikePolo tPlayer = playersInGame.get(i);
+			BikePoloPlayer tPlayer = playersInGame.get(i);
 			playersInGameNames[i] = tPlayer.getName();
 			tPlayer.playGame();
 			dataSource.updatePlayer(tPlayer);
@@ -141,14 +151,14 @@ public class RandomizerMain extends FragmentActivity {
     	return playersInGameNames;
     }
     
-    private List<PlayerBikePolo> drawRandomPlayers(int playersToDraw, List<PlayerBikePolo> playersInDraw, int mode) {
-    	List<PlayerBikePolo> drawnPlayers = new ArrayList<PlayerBikePolo>();		 
+    private List<BikePoloPlayer> drawRandomPlayers(int playersToDraw, List<BikePoloPlayer> playersInDraw, int mode) {
+    	List<BikePoloPlayer> drawnPlayers = new ArrayList<BikePoloPlayer>();		 
 		if (playersToDraw < playersInDraw.size()) {
 	    	Random rand = new Random();
 	    	if (mode == MODE_RANDOM) {
 	    		while (drawnPlayers.size() < playersToDraw) {
 	    			int playerNumber = rand.nextInt(playersInDraw.size());
-	    			PlayerBikePolo drawnPlayer = playersInDraw.get(playerNumber);
+	    			BikePoloPlayer drawnPlayer = playersInDraw.get(playerNumber);
 	    			boolean alreadyDrawn = false;
 	    			for (int j= 0; j < drawnPlayers.size(); j++) {
 	    				if (drawnPlayers.get(j) == drawnPlayer) {
@@ -161,7 +171,8 @@ public class RandomizerMain extends FragmentActivity {
 	    			}
 	    		}
 	    	} else { // MODE_EVEN - players with least games play first
-	    		List<PlayerBikePolo> minPlaying = findMinPlaying(playersInDraw);
+	    		List<BikePoloPlayer> minPlaying = 
+	    				BikePoloPlayer.findMinPlaying(playersInDraw);
 	    		if (minPlaying.size() < playersToDraw) { // all least playing ones are in the game, we need more
 	    			int playersNextDraw = playersToDraw - minPlaying.size();
 	    			for (int i=0; i<minPlaying.size(); i++) {
@@ -179,26 +190,7 @@ public class RandomizerMain extends FragmentActivity {
 		}	    		
 		return drawnPlayers;
     }
-    
-    private List<PlayerBikePolo> findMinPlaying(List<PlayerBikePolo> allPlayers) {
-    	List<PlayerBikePolo> minPlayers = new ArrayList<PlayerBikePolo>();
-    	if (allPlayers.size()>0) {
-    		int minGames = allPlayers.get(0).getGames();
-    		for (int i=0; i<allPlayers.size(); i++) {
-    			PlayerBikePolo tPlayer = allPlayers.get(i);
-    			if (tPlayer.getGames() < minGames) {
-    				minGames = tPlayer.getGames();
-    				minPlayers.removeAll(minPlayers);
-    				minPlayers.add(tPlayer);
-    			} else if (tPlayer.getGames() == minGames) {
-    				minPlayers.add(tPlayer);
-    			}
-    				
-    		}
-    	}    	
-    	return minPlayers;
-    }
-    
+        
     public void removePlayer(String name) {
     	dataSource.deletePlayer(name);
     	updatePlayers();
@@ -240,16 +232,26 @@ public class RandomizerMain extends FragmentActivity {
     	CheckBox clickedCheckBox = (CheckBox) view;
     	boolean newPlayState = clickedCheckBox.isChecked();
     	int clickedPlayerPosition = (Integer)clickedCheckBox.getTag();
-    	PlayerBikePolo player = players.get(clickedPlayerPosition); 
+    	BikePoloPlayer player = players.get(clickedPlayerPosition);
+    	if (newPlayState) { // player returns to game, handicap shall be recalculated
+    		int minGamesRank = BikePoloPlayer.findMinGamesRank(players);
+    		if (player.getGamesRank() < minGamesRank) {
+    			int handicap = minGamesRank - player.getGames();
+    			player.setHandicap(handicap);
+    			Toast.makeText(getBaseContext(), getString(R.string.rankAdjusted),
+    					Toast.LENGTH_SHORT).show();
+    		}
+    	}
     	player.setPlays(newPlayState);
     	dataSource.updatePlayer(player);
+    	updatePlayers();
     }
     
     private void menuResetGameCntClick() {
 		Toast.makeText(getBaseContext(), getString(R.string.resetGameCntResult),
 				Toast.LENGTH_SHORT).show();
     	for (int i=0; i<players.size(); i++) {
-    		PlayerBikePolo player = players.get(i); 
+    		BikePoloPlayer player = players.get(i); 
     		player.resetGames();
     		dataSource.updatePlayer(player);
     	}

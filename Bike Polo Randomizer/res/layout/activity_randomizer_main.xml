@@ -4,6 +4,15 @@
     android:layout_height="match_parent"
     android:gravity="left" >
 
+    <ImageView 
+        android:id="@+id/imageView1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:src="@drawable/logo_bpck"
+        android:scaleType="center"
+        android:contentDescription="@string/logo_bpck"
+         />
+    
     <Button
         android:id="@+id/nextGame"
         android:layout_width="wrap_content"
@@ -74,5 +83,7 @@
         android:layout_alignParentRight="true" >
 
     </ListView>
+
+    
 
 </RelativeLayout>
