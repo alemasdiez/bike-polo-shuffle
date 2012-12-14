@@ -2,7 +2,6 @@ package org.kkdt.bike.polo.randomizer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -22,8 +21,6 @@ public class RandomizerMain extends FragmentActivity {
 	public static final String PLAYER_NAME = "PLAYER_NAME";
 	public static final String PLAYER_LIST = "PLAYER_LIST";
 	public static final String PLAYER_NUMBER = "PLAYER_NUMBER";
-	private static final int MODE_RANDOM = 0;
-	private static final int MODE_EVEN = 1;
 	private static final String SUPER_ARIEL = "Super Ariel";
 	
 	private PlayerDBDataSource dataSource;
@@ -83,7 +80,7 @@ public class RandomizerMain extends FragmentActivity {
         super.onResume();
         // The activity has become visible (it is now "resumed").
         dataSource.open();
-        updatePlayers();
+        redrawPlayers();
     }
     
     @Override
@@ -98,7 +95,7 @@ public class RandomizerMain extends FragmentActivity {
         return true;
     }
         
-    private void updatePlayers() {
+    private void redrawPlayers() {
     	
         players = dataSource.getAllPlayers();      
         PlayerAdapter adapter = new PlayerAdapter (this, players);
@@ -122,7 +119,7 @@ public class RandomizerMain extends FragmentActivity {
     		} 
     		BikePoloPlayer newPlayer = new BikePoloPlayer(playerName, handicap); 
         	dataSource.insertPlayer(newPlayer);
-        	updatePlayers();
+        	redrawPlayers();
     	}    	
     }
     
@@ -139,10 +136,14 @@ public class RandomizerMain extends FragmentActivity {
     	if (listActivePlayers.size() > 0) {
     		int playersToDraw;
     		playersToDraw = NUM_PLAYERS;    			
-    		playersInGame = drawRandomPlayers(playersToDraw, listActivePlayers, MODE_EVEN);    			
+    		playersInGame = BikePoloPlayer.drawRandomPlayers(playersToDraw, listActivePlayers,
+    				BikePoloPlayer.MODE_EVEN);    			
     	}
-    	String[] playersInGameNames = new String[playersInGame.size()];
+    	String[] playersInGameNames = new String[playersInGame.size()];    	
 		for (int i=0; i< playersInGame.size(); i++) {
+			// Incrementing number of plays per player should be part of
+			// result from the new game dialog. But can stay here as long as there
+			// is no possibility to cancel the dialog.
 			BikePoloPlayer tPlayer = playersInGame.get(i);
 			playersInGameNames[i] = tPlayer.getName();
 			tPlayer.playGame();
@@ -151,49 +152,10 @@ public class RandomizerMain extends FragmentActivity {
     	return playersInGameNames;
     }
     
-    private List<BikePoloPlayer> drawRandomPlayers(int playersToDraw, List<BikePoloPlayer> playersInDraw, int mode) {
-    	List<BikePoloPlayer> drawnPlayers = new ArrayList<BikePoloPlayer>();		 
-		if (playersToDraw < playersInDraw.size()) {
-	    	Random rand = new Random();
-	    	if (mode == MODE_RANDOM) {
-	    		while (drawnPlayers.size() < playersToDraw) {
-	    			int playerNumber = rand.nextInt(playersInDraw.size());
-	    			BikePoloPlayer drawnPlayer = playersInDraw.get(playerNumber);
-	    			boolean alreadyDrawn = false;
-	    			for (int j= 0; j < drawnPlayers.size(); j++) {
-	    				if (drawnPlayers.get(j) == drawnPlayer) {
-	    					alreadyDrawn = true;
-	    					break;
-	    				}
-	    			}
-	    			if (!alreadyDrawn) {
-	    				drawnPlayers.add(drawnPlayer);				
-	    			}
-	    		}
-	    	} else { // MODE_EVEN - players with least games play first
-	    		List<BikePoloPlayer> minPlaying = 
-	    				BikePoloPlayer.findMinPlaying(playersInDraw);
-	    		if (minPlaying.size() < playersToDraw) { // all least playing ones are in the game, we need more
-	    			int playersNextDraw = playersToDraw - minPlaying.size();
-	    			for (int i=0; i<minPlaying.size(); i++) {
-	    				playersInDraw.remove(minPlaying.get(i));
-	    			}	    		
-	    			drawnPlayers = drawRandomPlayers(playersNextDraw, playersInDraw, MODE_EVEN);
-	    			drawnPlayers.addAll(minPlaying);
-	    		} else { // more players at minimum level that we need, draw random out of them
-	    			drawnPlayers = drawRandomPlayers(playersToDraw, minPlaying, MODE_RANDOM);
-	    		}
-	    	}
-		}
-		else { // playersToDraw >= playersInDraw.size so all can play
-			drawnPlayers = playersInDraw; 
-		}	    		
-		return drawnPlayers;
-    }
         
     public void removePlayer(String name) {
     	dataSource.deletePlayer(name);
-    	updatePlayers();
+    	redrawPlayers();
     }
     
     private void removePlayerDialog(int whichPlayer) {    	
@@ -220,9 +182,9 @@ public class RandomizerMain extends FragmentActivity {
     		String buttonName = getString(R.string.nextGame);
     		Bundle dialogParams = new Bundle();
     		dialogParams.putStringArray(PLAYER_LIST, playersInGame);
-    		dialog.setArguments(dialogParams);            
+    		dialog.setArguments(dialogParams);    		
     		dialog.show(getSupportFragmentManager(), buttonName);
-    		updatePlayers();
+    		redrawPlayers();
     	}
     	// else - no players - do nothing
     	
@@ -244,7 +206,7 @@ public class RandomizerMain extends FragmentActivity {
     	}
     	player.setPlays(newPlayState);
     	dataSource.updatePlayer(player);
-    	updatePlayers();
+    	redrawPlayers();
     }
     
     private void menuResetGameCntClick() {
@@ -255,7 +217,7 @@ public class RandomizerMain extends FragmentActivity {
     		player.resetGames();
     		dataSource.updatePlayer(player);
     	}
-    	updatePlayers();
+    	redrawPlayers();
     }
 
 
@@ -263,7 +225,7 @@ public class RandomizerMain extends FragmentActivity {
 		Toast.makeText(getBaseContext(), getString(R.string.removeAllPlayersResult),
 				Toast.LENGTH_SHORT).show();
     	dataSource.deleteAllPlayers();
-    	updatePlayers();
+    	redrawPlayers();
     }
 
     @Override
@@ -280,5 +242,6 @@ public class RandomizerMain extends FragmentActivity {
     		return super.onOptionsItemSelected(item);
     	}
     }
+    
 }
 

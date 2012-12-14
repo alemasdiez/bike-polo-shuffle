@@ -2,12 +2,15 @@ package org.kkdt.bike.polo.randomizer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class BikePoloPlayer {
 	private String name;
 	private int games;
 	private int handicap; // value added to games due to missed games
 	private boolean plays;
+	public static final int MODE_RANDOM = 0;
+	public static final int MODE_EVEN = 1;
 
 	//		player(String newname, int newgames) {
 	//			this.name = newname;
@@ -118,4 +121,48 @@ public class BikePoloPlayer {
     	return minGamesRank;
     }
 	
+    
+    public static List<BikePoloPlayer> drawRandomPlayers(int playersToDraw, List<BikePoloPlayer> playersInDraw, int mode) {
+    	List<BikePoloPlayer> drawnPlayers = new ArrayList<BikePoloPlayer>();		 
+    	Random rand = new Random();
+    	if (playersToDraw < playersInDraw.size()) {
+	    	if (mode == MODE_RANDOM) {
+	    		while (drawnPlayers.size() < playersToDraw) {
+	    			int playerNumber = rand.nextInt(playersInDraw.size());
+	    			BikePoloPlayer drawnPlayer = playersInDraw.get(playerNumber);
+	    			boolean alreadyDrawn = false;
+	    			for (int j= 0; j < drawnPlayers.size(); j++) {
+	    				if (drawnPlayers.get(j) == drawnPlayer) {
+	    					alreadyDrawn = true;
+	    					break;
+	    				}
+	    			}
+	    			if (!alreadyDrawn) {
+	    				drawnPlayers.add(drawnPlayer);				
+	    			}
+	    		}
+	    	} else { // MODE_EVEN - players with least games play first
+	    		List<BikePoloPlayer> minPlaying = 
+	    				BikePoloPlayer.findMinPlaying(playersInDraw);
+	    		if (minPlaying.size() < playersToDraw) { // all least playing ones are in the game, we need more
+	    			int playersNextDraw = playersToDraw - minPlaying.size();
+	    			for (int i=0; i<minPlaying.size(); i++) {
+	    				playersInDraw.remove(minPlaying.get(i));
+	    			}	    		
+	    			drawnPlayers = drawRandomPlayers(playersNextDraw, playersInDraw, MODE_EVEN);
+	    			drawnPlayers.addAll(minPlaying);
+	    		} else { // more players at minimum level that we need, draw random out of them
+	    			drawnPlayers = drawRandomPlayers(playersToDraw, minPlaying, MODE_RANDOM);
+	    		}
+	    	}
+		}
+		else { // playersToDraw >= playersInDraw.size so all can play
+			while (playersInDraw.size()>0) {
+				int playerNumber = rand.nextInt(playersInDraw.size());
+				drawnPlayers.add(playersInDraw.get(playerNumber));
+				playersInDraw.remove(playerNumber); 
+			}
+		}	    		
+		return drawnPlayers;
+    }
 }

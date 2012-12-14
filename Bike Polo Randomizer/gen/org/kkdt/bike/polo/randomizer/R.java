@@ -21,15 +21,18 @@ public final class R {
     }
     public static final class id {
         public static final int addPlayer=0x7f070002;
-        public static final int checkboxInPlay=0x7f070009;
+        public static final int checkboxInPlay=0x7f07000c;
         public static final int editAddPlayer=0x7f070008;
-        public static final int gamesPlayedOnList=0x7f07000b;
+        public static final int gamesPlayedOnList=0x7f07000e;
         public static final int imageView1=0x7f070000;
         public static final int listPlayers=0x7f070007;
-        public static final int menuClearPlayerList=0x7f07000c;
-        public static final int menuResetGameCnt=0x7f07000d;
+        public static final int menuClearPlayerList=0x7f07000f;
+        public static final int menuResetGameCnt=0x7f070010;
+        public static final int newGameListViewLeft=0x7f070009;
+        public static final int newGameListViewRight=0x7f07000a;
         public static final int nextGame=0x7f070001;
-        public static final int playerNameOnList=0x7f07000a;
+        public static final int playerNameOnList=0x7f07000d;
+        public static final int playerNewGameList=0x7f07000b;
         public static final int textView1=0x7f070003;
         public static final int textView2=0x7f070004;
         public static final int textView3=0x7f070005;
@@ -38,7 +41,9 @@ public final class R {
     public static final class layout {
         public static final int activity_randomizer_main=0x7f030000;
         public static final int dialog_add_player=0x7f030001;
-        public static final int list_player_item=0x7f030002;
+        public static final int dialog_new_game_land=0x7f030002;
+        public static final int list_new_game_item=0x7f030003;
+        public static final int list_player_item=0x7f030004;
     }
     public static final class menu {
         public static final int activity_randomizer_main=0x7f060000;
@@ -54,6 +59,7 @@ public final class R {
         public static final int menu_settings=0x7f040002;
         public static final int name=0x7f040011;
         public static final int nextGame=0x7f040004;
+        public static final int nextGameTitle=0x7f040015;
         public static final int playQ=0x7f040010;
         public static final int playerExists=0x7f040009;
         public static final int rankAdjusted=0x7f040013;
