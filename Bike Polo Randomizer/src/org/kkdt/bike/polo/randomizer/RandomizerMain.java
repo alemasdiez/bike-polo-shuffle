@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -21,10 +22,16 @@ public class RandomizerMain extends FragmentActivity {
 	public static final String PLAYER_NAME = "PLAYER_NAME";
 	public static final String PLAYER_LIST = "PLAYER_LIST";
 	public static final String PLAYER_NUMBER = "PLAYER_NUMBER";
+	public static final int YES = 1;
+	public static final int NO = 0;
+	public static final int USE_TIMER = 0;
+	
 	private static final String SUPER_ARIEL = "Super Ariel";
+	private static final int NUM_PLAYERS = 6;
 	
 	private PlayerDBDataSource dataSource;
 	private List<BikePoloPlayer> players = new ArrayList<BikePoloPlayer>();
+	private List<BikePoloPlayer> currentGame = new ArrayList<BikePoloPlayer>();
 		
 	private class PlayerAdapter extends ArrayAdapter<BikePoloPlayer> {		
 		
@@ -123,8 +130,8 @@ public class RandomizerMain extends FragmentActivity {
     	}    	
     }
     
-    private String[] drawPlayers(List<BikePoloPlayer> listPlayers) {
-    	final int NUM_PLAYERS = 6;
+    private List<BikePoloPlayer> drawPlayers(List<BikePoloPlayer> listPlayers,
+    		int playersToDraw) {
     	List<BikePoloPlayer> playersInGame = new ArrayList<BikePoloPlayer>();    	
     	List<BikePoloPlayer> listActivePlayers = new ArrayList<BikePoloPlayer>();    	
     	for (int i=0;i<listPlayers.size();i++) {
@@ -134,28 +141,58 @@ public class RandomizerMain extends FragmentActivity {
     		}
     	}
     	if (listActivePlayers.size() > 0) {
-    		int playersToDraw;
-    		playersToDraw = NUM_PLAYERS;    			
     		playersInGame = BikePoloPlayer.drawRandomPlayers(playersToDraw, listActivePlayers,
     				BikePoloPlayer.MODE_EVEN);    			
     	}
-    	String[] playersInGameNames = new String[playersInGame.size()];    	
-		for (int i=0; i< playersInGame.size(); i++) {
-			// Incrementing number of plays per player should be part of
-			// result from the new game dialog. But can stay here as long as there
-			// is no possibility to cancel the dialog.
-			BikePoloPlayer tPlayer = playersInGame.get(i);
-			playersInGameNames[i] = tPlayer.getName();
+    	return playersInGame;
+    }
+    
+    public void startGame(List<BikePoloPlayer> playersInGame, boolean useTimer) {
+    	for (BikePoloPlayer tPlayer : playersInGame) {
 			tPlayer.playGame();
 			dataSource.updatePlayer(tPlayer);
 		}
-    	return playersInGameNames;
+		redrawPlayers();
     }
     
-        
+    public List<BikePoloPlayer> getCurrentGame() {
+    	return currentGame;
+    }
+    
+    public String changeCurrentPlayer(String playerName) {
+    	String newPlayerName = null;
+    	for (BikePoloPlayer tPlayer: currentGame) {
+    		if (tPlayer.getName() == playerName) {
+    			List<BikePoloPlayer> otherPlayers = players;
+    			otherPlayers.removeAll(currentGame);
+    			currentGame.remove(tPlayer);
+    			List<BikePoloPlayer> newPlayerList = drawPlayers(otherPlayers, 1);
+    			if (newPlayerList.size()>0) {
+        			BikePoloPlayer newPlayer = newPlayerList.get(0);
+        			currentGame.add(newPlayer);
+        			newPlayerName = newPlayer.getName();    				
+    			}
+    			break;
+    		}
+    	}
+    	
+    	return newPlayerName;    
+    }
+    
     public void removePlayer(String name) {
     	dataSource.deletePlayer(name);
     	redrawPlayers();
+    }
+    
+    public static int getSettings(int whichSetting) {
+    	int settingValue = 0;
+    	switch (whichSetting) {
+    	case USE_TIMER:
+    		settingValue = NO;
+    		break;
+    	default:
+    	}
+    	return settingValue;
     }
     
     private void removePlayerDialog(int whichPlayer) {    	
@@ -175,19 +212,15 @@ public class RandomizerMain extends FragmentActivity {
     }
     
     public void nextGameButton(View view) {
-    	String[] playersInGame = drawPlayers(players);
-    	if (playersInGame.length>0) {
-    		// Any players in game - show dialog with results
-    		NextGameDialog dialog = new NextGameDialog();
+    	List<BikePoloPlayer> playersInGame = drawPlayers(players, NUM_PLAYERS);
+    	if (playersInGame.size()>0) {
+    		// Any players in game - show dialog
+    		NewGameDialog dialog = new NewGameDialog();
     		String buttonName = getString(R.string.nextGame);
-    		Bundle dialogParams = new Bundle();
-    		dialogParams.putStringArray(PLAYER_LIST, playersInGame);
-    		dialog.setArguments(dialogParams);    		
+        	currentGame = playersInGame;    		
     		dialog.show(getSupportFragmentManager(), buttonName);
-    		redrawPlayers();
     	}
-    	// else - no players - do nothing
-    	
+    	// else - no players - do nothing    	 
     }
     
     public void checkboxInPlayClick(View view) {
@@ -233,11 +266,22 @@ public class RandomizerMain extends FragmentActivity {
     	// Handle item selection
     	switch (item.getItemId()) {
     	case R.id.menuResetGameCnt:
-    		menuResetGameCntClick();
+    		//menuResetGameCntClick();   		
+    		Resources res = getResources();
+    		String piwo = res.getDrawable(R.drawable.ic_action_cut).toString();
+    		Toast.makeText(getApplicationContext(), piwo, Toast.LENGTH_SHORT);
     		return true;
     	case R.id.menuClearPlayerList:
     		menuRemoveAllPlayersClick();
     		return true;
+    	case R.id.menuShowLastGame:
+        	if (currentGame.size()>0) {
+        		// Any players in game - show dialog
+        		LastGameDialog dialog = new LastGameDialog();
+        		String buttonName = getString(R.string.nextGame);
+        		dialog.show(getSupportFragmentManager(), buttonName);
+        	}
+        	// else - no players - do nothing    	     		
     	default:
     		return super.onOptionsItemSelected(item);
     	}

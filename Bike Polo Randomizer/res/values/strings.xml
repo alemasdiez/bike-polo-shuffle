@@ -20,6 +20,10 @@
     <string name="games">Games</string>
     <string name="rankAdjusted">Rank adjusted</string>
     <string name="logo_bpck">Logo BPCK</string>
-    <string name="nextGameTitle">Next game:</string>
+    <string name="nextGameTitle">Next game</string>
+    <string name="Time">Time: </string>
+    <string name="startTimer">Start Timer</string>
+    <string name="menuShowLastGame">Show Last Game</string>
+    <string name="lastGameTitle">Last Game</string>
 
 </resources>

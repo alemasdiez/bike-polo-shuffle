@@ -11,9 +11,9 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int action_settings=0x7f020000;
-        public static final int add_player=0x7f020001;
-        public static final int bike_polo_icon=0x7f020002;
+        public static final int add_player=0x7f020000;
+        public static final int bike_polo_icon=0x7f020001;
+        public static final int content_paste=0x7f020002;
         public static final int ic_action_cut=0x7f020003;
         public static final int ic_launcher=0x7f020004;
         public static final int logo_bpck=0x7f020005;
@@ -28,6 +28,7 @@ public final class R {
         public static final int listPlayers=0x7f070007;
         public static final int menuClearPlayerList=0x7f07000f;
         public static final int menuResetGameCnt=0x7f070010;
+        public static final int menuShowLastGame=0x7f070011;
         public static final int newGameListViewLeft=0x7f070009;
         public static final int newGameListViewRight=0x7f07000a;
         public static final int nextGame=0x7f070001;
@@ -50,12 +51,15 @@ public final class R {
     }
     public static final class string {
         public static final int NULL=0x7f040005;
+        public static final int Time=0x7f040016;
         public static final int addPlayer=0x7f040003;
         public static final int app_name=0x7f040000;
         public static final int app_name_2line=0x7f040001;
         public static final int enterName=0x7f040007;
         public static final int games=0x7f040012;
+        public static final int lastGameTitle=0x7f040019;
         public static final int logo_bpck=0x7f040014;
+        public static final int menuShowLastGame=0x7f040018;
         public static final int menu_settings=0x7f040002;
         public static final int name=0x7f040011;
         public static final int nextGame=0x7f040004;
@@ -70,6 +74,7 @@ public final class R {
         public static final int resetGameCnt=0x7f04000a;
         public static final int resetGameCntResult=0x7f04000e;
         public static final int resetGameCntShort=0x7f04000b;
+        public static final int startTimer=0x7f040017;
         public static final int zero=0x7f040006;
     }
     public static final class style {
