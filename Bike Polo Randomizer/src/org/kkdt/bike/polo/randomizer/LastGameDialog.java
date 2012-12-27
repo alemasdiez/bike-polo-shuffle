@@ -60,5 +60,15 @@ public class LastGameDialog extends DialogFragment {
         // Create the AlertDialog object and return it        
         return builder.create();
     }
+	
+	@Override
+	public void onDismiss(DialogInterface dialog) {
+		super.onDismiss(dialog);
+		RandomizerMain activity = (RandomizerMain)this.getActivity();
+		if (activity != null) { // activity still exists. Is null when dialog is dismissed
+								// due to activity destroyed.
+			activity.clearDialog();
+		}
+	}
 		    
 }

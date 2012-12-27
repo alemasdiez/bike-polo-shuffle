@@ -15,11 +15,21 @@ public class AddPlayer extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         final View dialogView = inflater.inflate(R.layout.dialog_add_player, null);
+        // get parameters
+        Bundle parameters = this.getArguments();
+        if (parameters != null) {
+        	if (parameters.containsKey(RandomizerMain.PLAYER_NAME)) { // Input already started
+        		String playerName = parameters.getString(RandomizerMain.PLAYER_NAME);
+        		EditText editText = (EditText) dialogView.findViewById(R.id.editAddPlayer);
+     	   		editText.setText(playerName);
+        	}
+        }
         builder.setView(dialogView);
         builder.setTitle(R.string.addPlayer)
                .setPositiveButton(R.string.addPlayer, new DialogInterface.OnClickListener() {
@@ -38,4 +48,19 @@ public class AddPlayer extends DialogFragment {
         return builder.create();
     }
     
+	@Override
+	public void onDismiss(DialogInterface dialog) {
+		super.onDismiss(dialog);
+		RandomizerMain activity = (RandomizerMain)this.getActivity();
+		if (activity != null) { // activity still exists. Is null when dialog is dismissed
+								// due to activity destroyed.
+			activity.clearDialog();
+		}
+	}
+	
+	public String getInputName() {
+		
+		EditText editText = (EditText) getDialog().findViewById(R.id.editAddPlayer);
+		return editText.getText().toString();
+	}
 }

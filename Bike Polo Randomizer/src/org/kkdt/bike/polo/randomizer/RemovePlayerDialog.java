@@ -9,12 +9,13 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
 public class RemovePlayerDialog extends DialogFragment {
-
+	private String playerName;
+	
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle parameters = this.getArguments();
-        final String playerName = parameters.getString(RandomizerMain.PLAYER_NAME);
+        playerName = parameters.getString(RandomizerMain.PLAYER_NAME);
         String title = getString(R.string.removePlayer) + " " + playerName + "?";
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(title)        		 	   
@@ -30,4 +31,18 @@ public class RemovePlayerDialog extends DialogFragment {
         return builder.create();
     }
     
+	@Override
+	public void onDismiss(DialogInterface dialog) {
+		super.onDismiss(dialog);
+		RandomizerMain activity = (RandomizerMain)this.getActivity();
+		if (activity != null) { // activity still exists. Is null when dialog is dismissed
+								// due to activity destroyed.
+			activity.clearDialog();
+		}
+	}
+	
+	public String getRemovedName() {
+		return playerName;
+	}
+	
 }

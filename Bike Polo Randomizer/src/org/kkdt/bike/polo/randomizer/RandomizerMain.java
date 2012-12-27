@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -21,17 +20,28 @@ import android.widget.Toast;
 public class RandomizerMain extends FragmentActivity {
 	public static final String PLAYER_NAME = "PLAYER_NAME";
 	public static final String PLAYER_LIST = "PLAYER_LIST";
-	public static final String PLAYER_NUMBER = "PLAYER_NUMBER";
+	public static final String PLAYER_NUMBER = "PLAYER_NUMBER";	
 	public static final int YES = 1;
 	public static final int NO = 0;
 	public static final int USE_TIMER = 0;
 	
 	private static final String SUPER_ARIEL = "Super Ariel";
-	private static final int NUM_PLAYERS = 6;
+	private static final String CURRENT_DIALOG = "CURRENT_DIALOG";
+	private static final int NUM_PLAYERS = 6;	
+	private static final int NO_DIALOG = 0;
+	private static final int NEW_GAME = 1;
+	private static final int LAST_GAME = 2;
+	private static final int REMOVE_PLAYER = 3;
+	private static final int ADD_PLAYER = 4;
 	
 	private PlayerDBDataSource dataSource;
 	private List<BikePoloPlayer> players = new ArrayList<BikePoloPlayer>();
 	private List<BikePoloPlayer> currentGame = new ArrayList<BikePoloPlayer>();
+	private LastGameDialog dialogLastGame = new LastGameDialog();
+	private RemovePlayerDialog dialogRemovePlayer = new RemovePlayerDialog();
+	private NewGameDialog dialogNewGame = new NewGameDialog();
+    private AddPlayer dialogAddPlayer = new AddPlayer();
+	private int currentDialog = NO_DIALOG;
 		
 	private class PlayerAdapter extends ArrayAdapter<BikePoloPlayer> {		
 		
@@ -71,7 +81,7 @@ public class RandomizerMain extends FragmentActivity {
 			playerInGame.setTag(position);
 			return v;
 		}
-	}
+	}	
 	
 
     @Override
@@ -79,7 +89,48 @@ public class RandomizerMain extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_randomizer_main);
         dataSource = new PlayerDBDataSource(this);
+		dataSource.open();
+        if (savedInstanceState != null) {        	
+        	if (savedInstanceState.containsKey(PLAYER_LIST)) { // current/last game stored
+        		currentGame.clear();	// clear list
+        		players = dataSource.getAllPlayers(); // refresh players list
+        		int[] playerNumbers = savedInstanceState.getIntArray(PLAYER_LIST);
+        		for (int i=0; i<playerNumbers.length; i++) {
+        			currentGame.add(players.get(playerNumbers[i]));
+        		}
+        	}
+        	if (savedInstanceState.containsKey(CURRENT_DIALOG)) {
+        		// restore dialogs
+        		currentDialog = savedInstanceState.getInt(CURRENT_DIALOG);
+        		switch (currentDialog) {
+        		case NEW_GAME:
+        			dialogNewGame.show(getSupportFragmentManager(), getString(R.string.nextGame));
+        			break;
+        		case LAST_GAME:        		
+        			dialogLastGame.show(getSupportFragmentManager(), getString(R.string.nextGame));       		
+        			break;
+        		case REMOVE_PLAYER:
+        			Bundle dialogParams = new Bundle();
+        			String removedName = savedInstanceState.getString(PLAYER_NAME);
+        			dialogParams.putString(PLAYER_NAME, removedName);
+        			dialogRemovePlayer.setArguments(dialogParams);            
+        			dialogRemovePlayer.show(getSupportFragmentManager(), getString(R.string.removePlayer));
+        			break;
+        		case ADD_PLAYER:
+        			dialogParams = new Bundle();
+        			String addedName = savedInstanceState.getString(PLAYER_NAME);
+        			dialogParams.putString(PLAYER_NAME, addedName);
+        			dialogAddPlayer.setArguments(dialogParams);            
+        			dialogAddPlayer.show(getSupportFragmentManager(), getString(R.string.addPlayer));
+        			break;
+        		default:	// no dialog
+        			break;
+        		}
+        	}
 
+        } else { // first run
+        	currentDialog = NO_DIALOG;
+        }
     }
     
     @Override
@@ -100,6 +151,33 @@ public class RandomizerMain extends FragmentActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_randomizer_main, menu);
         return true;
+    }
+    
+    @Override
+    
+    protected void onSaveInstanceState(Bundle outState) {
+    	if (currentGame.size()>0) { // at least one game played
+    		dataSource.open(); // may have been closed by onPause;
+    		players = dataSource.getAllPlayers(); // update players list
+    		dataSource.close();
+    		int[] currentGamePlayerIds = new int[currentGame.size()];
+    		int i = 0;
+    		for (BikePoloPlayer player : currentGame) {
+    			currentGamePlayerIds[i++] = players.indexOf(player); 
+    		}
+    		outState.putIntArray(PLAYER_LIST, currentGamePlayerIds);
+    	}
+    	outState.putInt(CURRENT_DIALOG, currentDialog);
+    	switch (currentDialog) {
+    	case REMOVE_PLAYER:
+    		outState.putString(PLAYER_NAME, dialogRemovePlayer.getRemovedName());
+    		break;
+    	case ADD_PLAYER:
+    		outState.putString(PLAYER_NAME, dialogAddPlayer.getInputName());
+    		break;
+    	default:
+    		break;
+    	}
     }
         
     private void redrawPlayers() {
@@ -195,30 +273,33 @@ public class RandomizerMain extends FragmentActivity {
     	return settingValue;
     }
     
+    public void clearDialog() {
+    	currentDialog = NO_DIALOG;
+    }
+    
     private void removePlayerDialog(int whichPlayer) {    	
-		RemovePlayerDialog dialog = new RemovePlayerDialog();
 		String dialogName = getString(R.string.removePlayer);
 		Bundle dialogParams = new Bundle();
-		dialogParams.putInt(PLAYER_NUMBER, whichPlayer);
 		dialogParams.putString(PLAYER_NAME, players.get(whichPlayer).getName());
-		dialog.setArguments(dialogParams);            
-		dialog.show(getSupportFragmentManager(), dialogName);
+		dialogRemovePlayer.setArguments(dialogParams);            
+		dialogRemovePlayer.show(getSupportFragmentManager(), dialogName);
+		currentDialog = REMOVE_PLAYER;
     }
     
     public void addPlayerButton(View view) {
-        AddPlayer dialog = new AddPlayer();
         String buttonName = getString(R.string.addPlayer);
-        dialog.show(getSupportFragmentManager(), buttonName);
+        dialogAddPlayer.show(getSupportFragmentManager(), buttonName);
+        currentDialog = ADD_PLAYER;
     }
     
     public void nextGameButton(View view) {
     	List<BikePoloPlayer> playersInGame = drawPlayers(players, NUM_PLAYERS);
     	if (playersInGame.size()>0) {
-    		// Any players in game - show dialog
-    		NewGameDialog dialog = new NewGameDialog();
+    		// Any players in game - show dialogLastGame
     		String buttonName = getString(R.string.nextGame);
         	currentGame = playersInGame;    		
-    		dialog.show(getSupportFragmentManager(), buttonName);
+    		dialogNewGame.show(getSupportFragmentManager(), buttonName);
+    		currentDialog = NEW_GAME;
     	}
     	// else - no players - do nothing    	 
     }
@@ -266,20 +347,18 @@ public class RandomizerMain extends FragmentActivity {
     	// Handle item selection
     	switch (item.getItemId()) {
     	case R.id.menuResetGameCnt:
-    		//menuResetGameCntClick();   		
-    		Resources res = getResources();
-    		String piwo = res.getDrawable(R.drawable.ic_action_cut).toString();
-    		Toast.makeText(getApplicationContext(), piwo, Toast.LENGTH_SHORT);
+    		menuResetGameCntClick();   		
     		return true;
     	case R.id.menuClearPlayerList:
     		menuRemoveAllPlayersClick();
     		return true;
     	case R.id.menuShowLastGame:
         	if (currentGame.size()>0) {
-        		// Any players in game - show dialog
-        		LastGameDialog dialog = new LastGameDialog();
+        		// Any players in game - show dialogLastGame
         		String buttonName = getString(R.string.nextGame);
-        		dialog.show(getSupportFragmentManager(), buttonName);
+        		dialogLastGame.show(getSupportFragmentManager(), buttonName);
+        		currentDialog = LAST_GAME;
+        		return true;
         	}
         	// else - no players - do nothing    	     		
     	default:
@@ -287,5 +366,8 @@ public class RandomizerMain extends FragmentActivity {
     	}
     }
     
+    public void showToast(String text) {
+    	Toast.makeText(getBaseContext(), text, Toast.LENGTH_SHORT).show();
+    }
 }
 

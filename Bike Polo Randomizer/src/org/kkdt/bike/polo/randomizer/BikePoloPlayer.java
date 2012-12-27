@@ -85,6 +85,32 @@ public class BikePoloPlayer {
 	public String toString() {
 		return this.name;
 	}
+	
+	@Override	
+	public boolean equals (Object otherObject) {
+		if (otherObject instanceof BikePoloPlayer) {
+			BikePoloPlayer otherPlayer = (BikePoloPlayer) otherObject;
+			if (otherPlayer == this) { // same object
+				return true;
+			} else {
+				return otherPlayer.name.equals(name) &&
+						otherPlayer.games == games &&
+						otherPlayer.handicap == handicap &&
+						otherPlayer.plays == plays;						
+			}
+				
+		} else
+		return false;		
+	}
+	
+	@Override
+	public int hashCode() {
+		int hash = name.hashCode() | games | handicap;
+		if (!plays) {
+			hash = - hash;
+		}
+		return hash;
+	}
 
     public static List<BikePoloPlayer> findMinPlaying(List<BikePoloPlayer> allPlayers) {
     	List<BikePoloPlayer> minPlayers = new ArrayList<BikePoloPlayer>();
