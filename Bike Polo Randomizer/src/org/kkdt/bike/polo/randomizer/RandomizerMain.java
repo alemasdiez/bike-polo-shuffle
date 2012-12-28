@@ -96,7 +96,12 @@ public class RandomizerMain extends FragmentActivity {
         		players = dataSource.getAllPlayers(); // refresh players list
         		int[] playerNumbers = savedInstanceState.getIntArray(PLAYER_LIST);
         		for (int i=0; i<playerNumbers.length; i++) {
-        			currentGame.add(players.get(playerNumbers[i]));
+        			if (playerNumbers[i]<players.size()) {
+        				currentGame.add(players.get(playerNumbers[i]));
+        			} else {
+        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
+        			}
+        			
         		}
         	}
         	if (savedInstanceState.containsKey(CURRENT_DIALOG)) {
@@ -145,6 +150,14 @@ public class RandomizerMain extends FragmentActivity {
     protected void onPause() {
     	super.onPause();
     	dataSource.close();
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (dataSource != null) {
+            dataSource.close();
+        }
     }
 
     @Override

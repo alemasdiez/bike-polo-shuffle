@@ -5,9 +5,13 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 public class AddPlayer extends DialogFragment {
 	
@@ -21,15 +25,30 @@ public class AddPlayer extends DialogFragment {
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         final View dialogView = inflater.inflate(R.layout.dialog_add_player, null);
+		EditText editText = (EditText) dialogView.findViewById(R.id.editAddPlayer);
+		final DialogFragment dialogF = this;
         // get parameters
         Bundle parameters = this.getArguments();
         if (parameters != null) {
         	if (parameters.containsKey(RandomizerMain.PLAYER_NAME)) { // Input already started
         		String playerName = parameters.getString(RandomizerMain.PLAYER_NAME);
-        		EditText editText = (EditText) dialogView.findViewById(R.id.editAddPlayer);
      	   		editText.setText(playerName);
         	}
         }
+        editText.setOnEditorActionListener(new OnEditorActionListener(){        	
+        	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        		if (actionId == EditorInfo.IME_ACTION_DONE) {
+             	   EditText editText = (EditText) dialogView.findViewById(R.id.editAddPlayer);
+             	   String name = editText.getText().toString();
+             	   if (name.length() > 0) {
+                 	   RandomizerMain parentActivity = (RandomizerMain) getActivity();
+             		   parentActivity.addPlayer(name);
+             		   dialogF.getDialog().dismiss();
+             	   }             	   
+        		}
+        		return true;
+        	}
+        });
         builder.setView(dialogView);
         builder.setTitle(R.string.addPlayer)
                .setPositiveButton(R.string.addPlayer, new DialogInterface.OnClickListener() {
