@@ -1,4 +1,4 @@
-package org.kkdt.bike.polo.randomizer;
+package org.kkdt.bike.polo.shuffle;
 
 import android.provider.BaseColumns;
 

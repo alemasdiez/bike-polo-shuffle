@@ -1,4 +1,6 @@
-package org.kkdt.bike.polo.randomizer;
+package org.kkdt.bike.polo.shuffle;
+
+import org.kkdt.bike.polo.randomizer.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -30,8 +32,8 @@ public class AddPlayer extends DialogFragment {
         // get parameters
         Bundle parameters = this.getArguments();
         if (parameters != null) {
-        	if (parameters.containsKey(RandomizerMain.PLAYER_NAME)) { // Input already started
-        		String playerName = parameters.getString(RandomizerMain.PLAYER_NAME);
+        	if (parameters.containsKey(ShuffleMain.PLAYER_NAME)) { // Input already started
+        		String playerName = parameters.getString(ShuffleMain.PLAYER_NAME);
      	   		editText.setText(playerName);
         	}
         }
@@ -41,7 +43,7 @@ public class AddPlayer extends DialogFragment {
              	   EditText editText = (EditText) dialogView.findViewById(R.id.editAddPlayer);
              	   String name = editText.getText().toString();
              	   if (name.length() > 0) {
-                 	   RandomizerMain parentActivity = (RandomizerMain) getActivity();
+                 	   ShuffleMain parentActivity = (ShuffleMain) getActivity();
              		   parentActivity.addPlayer(name);
              		   dialogF.getDialog().dismiss();
              	   }             	   
@@ -56,7 +58,7 @@ public class AddPlayer extends DialogFragment {
                 	   EditText editText = (EditText) dialogView.findViewById(R.id.editAddPlayer);
                 	   String name = editText.getText().toString();
                 	   if (name.length() > 0) {
-                    	   RandomizerMain parentActivity = (RandomizerMain) getActivity();
+                    	   ShuffleMain parentActivity = (ShuffleMain) getActivity();
                 		   parentActivity.addPlayer(name);
                 	   }
                    }
@@ -70,7 +72,7 @@ public class AddPlayer extends DialogFragment {
 	@Override
 	public void onDismiss(DialogInterface dialog) {
 		super.onDismiss(dialog);
-		RandomizerMain activity = (RandomizerMain)this.getActivity();
+		ShuffleMain activity = (ShuffleMain)this.getActivity();
 		if (activity != null) { // activity still exists. Is null when dialog is dismissed
 								// due to activity destroyed.
 			activity.clearDialog();

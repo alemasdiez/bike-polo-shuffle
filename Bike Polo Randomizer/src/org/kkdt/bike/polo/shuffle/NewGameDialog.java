@@ -1,8 +1,10 @@
-package org.kkdt.bike.polo.randomizer;
+package org.kkdt.bike.polo.shuffle;
 
 
 
 import java.util.List;
+
+import org.kkdt.bike.polo.randomizer.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -22,11 +24,11 @@ public class NewGameDialog extends DialogFragment {
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final RandomizerMain parentAct = (RandomizerMain)getActivity(); // parent activity
+        final ShuffleMain parentAct = (ShuffleMain)getActivity(); // parent activity
         
         // extract dialog parameters
         String startGameString = getString(android.R.string.ok);
-        if ((RandomizerMain.getSettings(RandomizerMain.USE_TIMER) == RandomizerMain.YES)) {
+        if ((ShuffleMain.getSettings(ShuffleMain.USE_TIMER) == ShuffleMain.YES)) {
         	startGameString = getString(R.string.startTimer);
         }
 
@@ -80,8 +82,8 @@ public class NewGameDialog extends DialogFragment {
         	   .setTitle(R.string.nextGameTitle)        		 	   
                .setPositiveButton(startGameString, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                	   if (RandomizerMain.getSettings(RandomizerMain.USE_TIMER) 
-                			   == RandomizerMain.YES) {
+                	   if (ShuffleMain.getSettings(ShuffleMain.USE_TIMER) 
+                			   == ShuffleMain.YES) {
                 		   parentAct.startGame(playerListDialog, true); // start with timer
                 	   } else {
                 		   parentAct.startGame(playerListDialog, false); // start without timer
@@ -101,7 +103,7 @@ public class NewGameDialog extends DialogFragment {
 	@Override
 	public void onDismiss(DialogInterface dialog) {
 		super.onDismiss(dialog);
-		RandomizerMain activity = (RandomizerMain)this.getActivity();
+		ShuffleMain activity = (ShuffleMain)this.getActivity();
 		if (activity != null) { // activity still exists. Is null when dialog is dismissed
 								// due to activity destroyed.
 			activity.clearDialog();

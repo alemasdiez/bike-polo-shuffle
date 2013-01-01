@@ -1,7 +1,9 @@
-package org.kkdt.bike.polo.randomizer;
+package org.kkdt.bike.polo.shuffle;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.kkdt.bike.polo.randomizer.R;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -17,7 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class RandomizerMain extends FragmentActivity {
+public class ShuffleMain extends FragmentActivity {
 	public static final String PLAYER_NAME = "PLAYER_NAME";
 	public static final String PLAYER_LIST = "PLAYER_LIST";
 	public static final String PLAYER_NUMBER = "PLAYER_NUMBER";	

@@ -1,6 +1,8 @@
-package org.kkdt.bike.polo.randomizer;
+package org.kkdt.bike.polo.shuffle;
 
 
+
+import org.kkdt.bike.polo.randomizer.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -15,13 +17,13 @@ public class RemovePlayerDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle parameters = this.getArguments();
-        playerName = parameters.getString(RandomizerMain.PLAYER_NAME);
+        playerName = parameters.getString(ShuffleMain.PLAYER_NAME);
         String title = getString(R.string.removePlayer) + " " + playerName + "?";
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(title)        		 	   
         		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
         			public void onClick(DialogInterface dialog, int id) {        				
-        		        RandomizerMain parentActivity = (RandomizerMain)getActivity();
+        		        ShuffleMain parentActivity = (ShuffleMain)getActivity();
         		        parentActivity.removePlayer(playerName);        		        
         			}
         		}               
@@ -34,7 +36,7 @@ public class RemovePlayerDialog extends DialogFragment {
 	@Override
 	public void onDismiss(DialogInterface dialog) {
 		super.onDismiss(dialog);
-		RandomizerMain activity = (RandomizerMain)this.getActivity();
+		ShuffleMain activity = (ShuffleMain)this.getActivity();
 		if (activity != null) { // activity still exists. Is null when dialog is dismissed
 								// due to activity destroyed.
 			activity.clearDialog();

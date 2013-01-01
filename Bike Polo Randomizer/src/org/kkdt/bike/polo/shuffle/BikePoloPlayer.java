@@ -1,4 +1,4 @@
-package org.kkdt.bike.polo.randomizer;
+package org.kkdt.bike.polo.shuffle;
 
 import java.util.ArrayList;
 import java.util.List;

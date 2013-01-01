@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.kkdt.bike.polo.randomizer"
-    android:versionCode="0"
-    android:versionName="0.3b" >
+    android:versionCode="1"
+    android:versionName="0.35b" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -14,7 +14,7 @@
         android:allowBackup="true"
         >       
         <activity
-            android:name=".RandomizerMain"
+            android:name="org.kkdt.bike.polo.shuffle.ShuffleMain"
             android:label="@string/app_name" 
             android:windowSoftInputMode="adjustPan"
             >

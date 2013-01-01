@@ -1,8 +1,10 @@
-package org.kkdt.bike.polo.randomizer;
+package org.kkdt.bike.polo.shuffle;
 
 
 
 import java.util.List;
+
+import org.kkdt.bike.polo.randomizer.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -19,7 +21,7 @@ public class LastGameDialog extends DialogFragment {
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final RandomizerMain parentAct = (RandomizerMain)getActivity(); // parent activity
+        final ShuffleMain parentAct = (ShuffleMain)getActivity(); // parent activity
         
         // extract dialog parameters
         String closeDialogString = getString(android.R.string.ok);
@@ -64,7 +66,7 @@ public class LastGameDialog extends DialogFragment {
 	@Override
 	public void onDismiss(DialogInterface dialog) {
 		super.onDismiss(dialog);
-		RandomizerMain activity = (RandomizerMain)this.getActivity();
+		ShuffleMain activity = (ShuffleMain)this.getActivity();
 		if (activity != null) { // activity still exists. Is null when dialog is dismissed
 								// due to activity destroyed.
 			activity.clearDialog();
