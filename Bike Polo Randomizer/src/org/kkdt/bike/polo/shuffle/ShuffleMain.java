@@ -3,8 +3,6 @@ package org.kkdt.bike.polo.shuffle;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kkdt.bike.polo.randomizer.R;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -100,9 +98,10 @@ public class ShuffleMain extends FragmentActivity {
         		for (int i=0; i<playerNumbers.length; i++) {
         			if (playerNumbers[i]<players.size()) {
         				currentGame.add(players.get(playerNumbers[i]));
-        			} else {
-        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
-        			}
+        			} 
+//        			else {
+//        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
+//        			}
         			
         		}
         	}

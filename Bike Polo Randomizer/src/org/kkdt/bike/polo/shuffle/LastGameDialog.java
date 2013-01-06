@@ -4,7 +4,7 @@ package org.kkdt.bike.polo.shuffle;
 
 import java.util.List;
 
-import org.kkdt.bike.polo.randomizer.R;
+import org.kkdt.bike.polo.shuffle.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

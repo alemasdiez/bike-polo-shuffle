@@ -1,6 +1,6 @@
 package org.kkdt.bike.polo.shuffle;
 
-import org.kkdt.bike.polo.randomizer.R;
+import org.kkdt.bike.polo.shuffle.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
