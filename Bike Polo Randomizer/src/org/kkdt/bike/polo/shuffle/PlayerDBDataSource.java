@@ -78,9 +78,9 @@ public class PlayerDBDataSource {
 
 	  public List<BikePoloPlayer> getAllPlayers() {
 	    List<BikePoloPlayer> players = new ArrayList<BikePoloPlayer>();
-
+	    String orderBy  = PlayerDataBase.PLAYER_NAME + PlayerDataBase.COLLATE;  	          
 	    Cursor cursor = database.query(PlayerDataBase.TABLE_NAME,
-	        allColumns, null, null, null, null, null);
+	        allColumns, null, null, null, null, orderBy);
 
 	    cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {

@@ -26,7 +26,7 @@ public abstract class PlayerDataBase implements BaseColumns {
 	        "DROP TABLE IF EXISTS " + TABLE_NAME;
 	    public static final String WHERE_NAME =
 	    		PLAYER_NAME + "=?";
-	    
+	    public static final String COLLATE = " COLLATE NOCASE";
 	 // Prevents the class from being instantiated.
 	    private PlayerDataBase() {}
 }

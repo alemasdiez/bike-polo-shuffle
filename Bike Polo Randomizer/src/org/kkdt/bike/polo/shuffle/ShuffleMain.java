@@ -96,7 +96,7 @@ public class ShuffleMain extends FragmentActivity {
         		players = dataSource.getAllPlayers(); // refresh players list
         		int[] playerNumbers = savedInstanceState.getIntArray(PLAYER_LIST);
         		for (int i=0; i<playerNumbers.length; i++) {
-        			if (playerNumbers[i]<players.size()) {
+        			if ((playerNumbers[i]<players.size()) && (playerNumbers[i]>=0)) {
         				currentGame.add(players.get(playerNumbers[i]));
         			} 
 //        			else {
@@ -196,7 +196,7 @@ public class ShuffleMain extends FragmentActivity {
         
     private void redrawPlayers() {
     	
-        players = dataSource.getAllPlayers();      
+        players = dataSource.getAllPlayers();         // get sorted results
         PlayerAdapter adapter = new PlayerAdapter (this, players);
         int id = R.id.listPlayers;
         View view = findViewById(id);
@@ -207,14 +207,13 @@ public class ShuffleMain extends FragmentActivity {
     public void addPlayer(String playerName)
     {
     	if (dataSource.checkPlayer(playerName)) {
-    		Toast.makeText(getBaseContext(), getString(R.string.playerExists),
-    				Toast.LENGTH_LONG).show();
+    		showToast(getString(R.string.playerExists));
     	} else {
     		int handicap = BikePoloPlayer.findMinGamesRank(players);;
     		if (playerName.equals(SUPER_ARIEL)) {
     			handicap -= 1;
-    			Toast.makeText(getBaseContext(), SUPER_ARIEL + " Mode",
-    					Toast.LENGTH_SHORT).show();
+    			showToast(SUPER_ARIEL + " Mode");
+    					
     		} 
     		BikePoloPlayer newPlayer = new BikePoloPlayer(playerName, handicap); 
         	dataSource.insertPlayer(newPlayer);
@@ -300,13 +299,13 @@ public class ShuffleMain extends FragmentActivity {
 		currentDialog = REMOVE_PLAYER;
     }
     
-    public void addPlayerButton(View view) {
+    public void addPlayer() {
         String buttonName = getString(R.string.addPlayer);
         dialogAddPlayer.show(getSupportFragmentManager(), buttonName);
         currentDialog = ADD_PLAYER;
     }
     
-    public void nextGameButton(View view) {
+    public void nextGame() {
     	List<BikePoloPlayer> playersInGame = drawPlayers(players, NUM_PLAYERS);
     	if (playersInGame.size()>0) {
     		// Any players in game - show dialogLastGame
@@ -314,8 +313,9 @@ public class ShuffleMain extends FragmentActivity {
         	currentGame = playersInGame;    		
     		dialogNewGame.show(getSupportFragmentManager(), buttonName);
     		currentDialog = NEW_GAME;
+    	} else {
+    		showToast("Add players first");
     	}
-    	// else - no players - do nothing    	 
     }
     
     public void checkboxInPlayClick(View view) {
@@ -328,8 +328,7 @@ public class ShuffleMain extends FragmentActivity {
     		if (player.getGamesRank() < minGamesRank) {
     			int handicap = minGamesRank - player.getGames();
     			player.setHandicap(handicap);
-    			Toast.makeText(getBaseContext(), getString(R.string.rankAdjusted),
-    					Toast.LENGTH_SHORT).show();
+    			showToast(getString(R.string.rankAdjusted));    					
     		}
     	}
     	player.setPlays(newPlayState);
@@ -338,8 +337,7 @@ public class ShuffleMain extends FragmentActivity {
     }
     
     private void menuResetGameCntClick() {
-		Toast.makeText(getBaseContext(), getString(R.string.resetGameCntResult),
-				Toast.LENGTH_SHORT).show();
+		showToast(getString(R.string.resetGameCntResult));
     	for (int i=0; i<players.size(); i++) {
     		BikePoloPlayer player = players.get(i); 
     		player.resetGames();
@@ -350,31 +348,44 @@ public class ShuffleMain extends FragmentActivity {
 
 
     private void menuRemoveAllPlayersClick() {
-		Toast.makeText(getBaseContext(), getString(R.string.removeAllPlayersResult),
-				Toast.LENGTH_SHORT).show();
+		showToast(getString(R.string.removeAllPlayersResult));				
     	dataSource.deleteAllPlayers();
     	redrawPlayers();
     }
 
+    public void addPlayerButton(View view) {
+        addPlayer();
+    }
+    
+    public void nextGameButton(View view) {
+    	nextGame();    	 
+    }    
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	// Handle item selection
     	switch (item.getItemId()) {
-    	case R.id.menuResetGameCnt:
-    		menuResetGameCntClick();   		
+    	case R.id.menuNewGame:
+    		nextGame();
     		return true;
-    	case R.id.menuClearPlayerList:
-    		menuRemoveAllPlayersClick();
+    	case R.id.menuAddPlayer:
+    		addPlayer();
     		return true;
     	case R.id.menuShowLastGame:
         	if (currentGame.size()>0) {
         		// Any players in game - show dialogLastGame
         		String buttonName = getString(R.string.nextGame);
         		dialogLastGame.show(getSupportFragmentManager(), buttonName);
-        		currentDialog = LAST_GAME;
-        		return true;
+        		currentDialog = LAST_GAME;        		
         	}
-        	// else - no players - do nothing    	     		
+        	// else - no last game players - do nothing
+        	return true;
+    	case R.id.menuResetGameCnt:
+    		menuResetGameCntClick();   		
+    		return true;
+    	case R.id.menuClearPlayerList:
+    		menuRemoveAllPlayersClick();
+    		return true;
     	default:
     		return super.onOptionsItemSelected(item);
     	}

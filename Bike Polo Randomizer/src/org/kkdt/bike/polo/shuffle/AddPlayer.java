@@ -33,8 +33,9 @@ public class AddPlayer extends DialogFragment {
         Bundle parameters = this.getArguments();
         if (parameters != null) {
         	if (parameters.containsKey(ShuffleMain.PLAYER_NAME)) { // Input already started
-        		String playerName = parameters.getString(ShuffleMain.PLAYER_NAME);
+        		String playerName = parameters.getString(ShuffleMain.PLAYER_NAME);        		
      	   		editText.setText(playerName);
+     	   		parameters.remove(ShuffleMain.PLAYER_NAME);
         	}
         }
         editText.setOnEditorActionListener(new OnEditorActionListener(){        	

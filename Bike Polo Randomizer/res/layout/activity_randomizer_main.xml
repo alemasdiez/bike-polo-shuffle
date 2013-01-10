@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:drawableRight="@drawable/bike_polo_icon"
+        android:drawableRight="@drawable/ic_bike_polo"
         android:onClick="nextGameButton"
         android:text="@string/nextGame" />
 
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:drawableLeft="@drawable/add_player"
+        android:drawableLeft="@drawable/ic_add_player"
         android:onClick="addPlayerButton"
         android:text="@string/addPlayer" />
 
