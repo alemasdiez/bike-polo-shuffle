@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -19,11 +20,13 @@ import android.widget.Toast;
 
 public class ShuffleMain extends FragmentActivity {
 	public static final String PLAYER_NAME = "PLAYER_NAME";
-	public static final String PLAYER_LIST = "PLAYER_LIST";
+	public static final String PLAYER_LIST_L = "PLAYER_LIST_L";
+	public static final String PLAYER_LIST_R = "PLAYER_LIST_R";
 	public static final String PLAYER_NUMBER = "PLAYER_NUMBER";	
 	public static final int YES = 1;
 	public static final int NO = 0;
 	public static final int USE_TIMER = 0;
+	public static final int DEFAULT_GAME_TIME = 1;
 	
 	private static final String SUPER_ARIEL = "Super Ariel";
 	private static final String CURRENT_DIALOG = "CURRENT_DIALOG";
@@ -36,7 +39,6 @@ public class ShuffleMain extends FragmentActivity {
 	
 	private PlayerDBDataSource dataSource;
 	private List<BikePoloPlayer> players = new ArrayList<BikePoloPlayer>();
-	private List<BikePoloPlayer> currentGame = new ArrayList<BikePoloPlayer>();
 	private LastGameDialog dialogLastGame = new LastGameDialog();
 	private RemovePlayerDialog dialogRemovePlayer = new RemovePlayerDialog();
 	private NewGameDialog dialogNewGame = new NewGameDialog();
@@ -91,20 +93,37 @@ public class ShuffleMain extends FragmentActivity {
         dataSource = new PlayerDBDataSource(this);
 		dataSource.open();
         if (savedInstanceState != null) {        	
-        	if (savedInstanceState.containsKey(PLAYER_LIST)) { // current/last game stored
-        		currentGame.clear();	// clear list
-        		players = dataSource.getAllPlayers(); // refresh players list
-        		int[] playerNumbers = savedInstanceState.getIntArray(PLAYER_LIST);
+    		players = dataSource.getAllPlayers(); // refresh players list
+    		BikePoloShuffleApp app = (BikePoloShuffleApp) getApplication();
+    		app.clearLatestGame();
+    		List<BikePoloPlayer> latestGameL = new ArrayList<BikePoloPlayer>();
+    		List<BikePoloPlayer> latestGameR = new ArrayList<BikePoloPlayer>();
+        	if (savedInstanceState.containsKey(PLAYER_LIST_L)) { // latest game L team stored
+        		int[] playerNumbers = savedInstanceState.getIntArray(PLAYER_LIST_L);
         		for (int i=0; i<playerNumbers.length; i++) {
         			if ((playerNumbers[i]<players.size()) && (playerNumbers[i]>=0)) {
-        				currentGame.add(players.get(playerNumbers[i]));
+        				latestGameL.add(players.get(playerNumbers[i]));
         			} 
-//        			else {
-//        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
-//        			}
+        			else {
+        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
+        			}
         			
         		}
         	}
+        	if (savedInstanceState.containsKey(PLAYER_LIST_R)) { // latest game R team stored
+        		latestGameR.clear();	// clear list
+        		int[] playerNumbers = savedInstanceState.getIntArray(PLAYER_LIST_R);
+        		for (int i=0; i<playerNumbers.length; i++) {
+        			if ((playerNumbers[i]<players.size()) && (playerNumbers[i]>=0)) {
+        				latestGameR.add(players.get(playerNumbers[i]));
+        			} 
+        			else {
+        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
+        			}
+        			
+        		}
+        	}
+        	app.setLatestGame(latestGameL, latestGameR);
         	if (savedInstanceState.containsKey(CURRENT_DIALOG)) {
         		// restore dialogs
         		currentDialog = savedInstanceState.getInt(CURRENT_DIALOG);
@@ -170,17 +189,31 @@ public class ShuffleMain extends FragmentActivity {
     @Override
     
     protected void onSaveInstanceState(Bundle outState) {
-    	if (currentGame.size()>0) { // at least one game played
-    		dataSource.open(); // may have been closed by onPause;
+		BikePoloShuffleApp app = (BikePoloShuffleApp) getApplication();	
+		List<BikePoloPlayer> latestGameL = app.getLatestGame(true);
+		List<BikePoloPlayer> latestGameR = app.getLatestGame(false);
+
+    	if (latestGameL.size()>0) { // at least one game played
+    		dataSource.open(); // may have been closed by onPause;    			
     		players = dataSource.getAllPlayers(); // update players list
-    		dataSource.close();
-    		int[] currentGamePlayerIds = new int[currentGame.size()];
+    		int[] currentGamePlayerIds = new int[latestGameL.size()];
     		int i = 0;
-    		for (BikePoloPlayer player : currentGame) {
+    		for (BikePoloPlayer player : latestGameL) {
     			currentGamePlayerIds[i++] = players.indexOf(player); 
     		}
-    		outState.putIntArray(PLAYER_LIST, currentGamePlayerIds);
+    		outState.putIntArray(PLAYER_LIST_L, currentGamePlayerIds);
     	}
+    	if (latestGameR.size()>0) { // at least one game played
+    		dataSource.open(); // may have been closed by onPause;    			
+    		players = dataSource.getAllPlayers(); // update players list
+    		int[] currentGamePlayerIds = new int[latestGameR.size()];
+    		int i = 0;
+    		for (BikePoloPlayer player : latestGameR) {
+    			currentGamePlayerIds[i++] = players.indexOf(player); 
+    		}
+    		outState.putIntArray(PLAYER_LIST_R, currentGamePlayerIds);    		
+    	}
+    	dataSource.close();	// close if open
     	outState.putInt(CURRENT_DIALOG, currentDialog);
     	switch (currentDialog) {
     	case REMOVE_PLAYER:
@@ -238,29 +271,40 @@ public class ShuffleMain extends FragmentActivity {
     	return playersInGame;
     }
     
-    public void startGame(List<BikePoloPlayer> playersInGame, boolean useTimer) {
-    	for (BikePoloPlayer tPlayer : playersInGame) {
+    public void startGame(List<BikePoloPlayer> playersInGameL,
+    		List<BikePoloPlayer> playersInGameR, boolean useTimer) {
+    	for (BikePoloPlayer tPlayer : playersInGameL) {
 			tPlayer.playGame();
 			dataSource.updatePlayer(tPlayer);
 		}
+    	for (BikePoloPlayer tPlayer : playersInGameR) {
+			tPlayer.playGame();
+			dataSource.updatePlayer(tPlayer);
+		}    	
 		redrawPlayers();
+		if (useTimer) {
+			Intent intent = new Intent(this, LatestGameActivity.class);
+			intent.putExtra("PIWO", "tez bym sie...");
+			startActivity(intent);
+		}
     }
-    
-    public List<BikePoloPlayer> getCurrentGame() {
-    	return currentGame;
-    }
-    
-    public String changeCurrentPlayer(String playerName) {
+        
+    public String changeCurrentPlayer(String playerName, boolean left) {
     	String newPlayerName = null;
-    	for (BikePoloPlayer tPlayer: currentGame) {
+		BikePoloShuffleApp app = (BikePoloShuffleApp) getApplication();	
+		List<BikePoloPlayer> latestGameL = app.getLatestGame(true);
+		List<BikePoloPlayer> latestGameR = app.getLatestGame(false);
+    	List<BikePoloPlayer> changedList = app.getLatestGame(left);
+    	for (BikePoloPlayer tPlayer: changedList) {
     		if (tPlayer.getName() == playerName) {
-    			List<BikePoloPlayer> otherPlayers = players;
-    			otherPlayers.removeAll(currentGame);
-    			currentGame.remove(tPlayer);
+    			List<BikePoloPlayer> otherPlayers = players; // fetch all players list
+    			otherPlayers.removeAll(latestGameL); // remove L team players
+    			otherPlayers.removeAll(latestGameR); // remove R team players
+    			changedList.remove(tPlayer);
     			List<BikePoloPlayer> newPlayerList = drawPlayers(otherPlayers, 1);
     			if (newPlayerList.size()>0) {
         			BikePoloPlayer newPlayer = newPlayerList.get(0);
-        			currentGame.add(newPlayer);
+        			changedList.add(newPlayer);
         			newPlayerName = newPlayer.getName();    				
     			}
     			break;
@@ -274,18 +318,7 @@ public class ShuffleMain extends FragmentActivity {
     	dataSource.deletePlayer(name);
     	redrawPlayers();
     }
-    
-    public static int getSettings(int whichSetting) {
-    	int settingValue = 0;
-    	switch (whichSetting) {
-    	case USE_TIMER:
-    		settingValue = NO;
-    		break;
-    	default:
-    	}
-    	return settingValue;
-    }
-    
+        
     public void clearDialog() {
     	currentDialog = NO_DIALOG;
     }
@@ -306,17 +339,46 @@ public class ShuffleMain extends FragmentActivity {
     }
     
     public void nextGame() {
+		players = dataSource.getAllPlayers(); // refresh players list    	
     	List<BikePoloPlayer> playersInGame = drawPlayers(players, NUM_PLAYERS);
     	if (playersInGame.size()>0) {
     		// Any players in game - show dialogLastGame
+    		BikePoloShuffleApp app = (BikePoloShuffleApp) getApplication();	
+    		List<BikePoloPlayer> latestGameL = app.getLatestGame(true);
+    		List<BikePoloPlayer> latestGameR = app.getLatestGame(false);
     		String buttonName = getString(R.string.nextGame);
-        	currentGame = playersInGame;    		
+    		int halfNumPlayers = (int)Math.ceil((double)playersInGame.size()/2);        
+            latestGameL.clear();
+            latestGameR.clear();
+    		for (int i=0;i<playersInGame.size();i++) {
+            	if (i<halfNumPlayers) {
+            		latestGameL.add(playersInGame.get(i));
+            	} else {
+            		latestGameR.add(playersInGame.get(i));
+            	}
+            }
+    		app.setLatestGame(latestGameL, latestGameR);
     		dialogNewGame.show(getSupportFragmentManager(), buttonName);
     		currentDialog = NEW_GAME;
     	} else {
     		showToast("Add players first");
     	}
     }
+    
+    public static int getSettings(int whichSetting) {
+    	int settingValue = 0;
+    	switch (whichSetting) {
+    	case USE_TIMER:
+    		settingValue = YES;
+    		break;
+    	case DEFAULT_GAME_TIME:
+    		settingValue = 10;
+    		break;
+    	default:
+    	}
+    	return settingValue;
+    }
+
     
     public void checkboxInPlayClick(View view) {
     	CheckBox clickedCheckBox = (CheckBox) view;
@@ -372,7 +434,9 @@ public class ShuffleMain extends FragmentActivity {
     		addPlayer();
     		return true;
     	case R.id.menuShowLastGame:
-        	if (currentGame.size()>0) {
+    		BikePoloShuffleApp app = (BikePoloShuffleApp) getApplication();	
+    		List<BikePoloPlayer> latestGameL = app.getLatestGame(true);
+        	if (latestGameL.size()>0) { // left game populated first
         		// Any players in game - show dialogLastGame
         		String buttonName = getString(R.string.nextGame);
         		dialogLastGame.show(getSupportFragmentManager(), buttonName);

@@ -29,19 +29,24 @@ public class LastGameDialog extends DialogFragment {
         // prepare dialog view
         LayoutInflater inflater = parentAct.getLayoutInflater();	
         final View dialogView = inflater.inflate(R.layout.dialog_new_game_land, null);
+
+        // get common App data
+        BikePoloShuffleApp app = (BikePoloShuffleApp) getActivity().getApplication();	
         
-        // split list into two columns
-        final List<BikePoloPlayer> playerListDialog = parentAct.getCurrentGame();       
-        int halfNumPlayers = (int)Math.ceil((double)playerListDialog.size()/2);        
-        String[] playerListLeft = new String[halfNumPlayers];
-        String[] playerListRight = new String[playerListDialog.size() - halfNumPlayers];
-        for (int i=0;i<playerListDialog.size();i++) {
-        	if (i<halfNumPlayers) {
-        		playerListLeft[i] = playerListDialog.get(i).getName();
-        	} else {
-        		playerListRight[i-halfNumPlayers] = playerListDialog.get(i).getName();
-        	}
-        }
+        // get both columns
+        
+        final List<BikePoloPlayer> playerListDialogL = app.getLatestGame(true);
+        int i=0;
+        String[] playerListLeft = new String[playerListDialogL.size()];        
+        for (BikePoloPlayer player : playerListDialogL) {
+			playerListLeft[i++] = player.getName(); 
+		}
+        final List<BikePoloPlayer> playerListDialogR = app.getLatestGame(false);
+        i=0;
+        String[] playerListRight = new String[playerListDialogR.size()];        
+        for (BikePoloPlayer player : playerListDialogR) {
+			playerListRight[i++] = player.getName(); 
+		}
         ArrayAdapter<String> dAdapterL = new ArrayAdapter<String>(dialogView.getContext(),
         			R.layout.list_new_game_item,  playerListLeft);
         ListView dListViewL = (ListView) dialogView.findViewById(R.id.newGameListViewLeft);

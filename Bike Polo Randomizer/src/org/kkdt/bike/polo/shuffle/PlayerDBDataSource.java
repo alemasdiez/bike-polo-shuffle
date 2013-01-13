@@ -15,17 +15,28 @@ public class PlayerDBDataSource {
 	  private BikePoloDataBaseHelper dbHelper;
 	  private String[] allColumns = { PlayerDataBase.ENTRY_ID, PlayerDataBase.PLAYER_NAME, 
 	      PlayerDataBase.PLAYER_GAMES, PlayerDataBase.PLAYER_HANDICAP, PlayerDataBase.PLAYER_INPLAY};
+	  private boolean dbOpen;
 
 	  public PlayerDBDataSource(Context context) {
 	    dbHelper = new BikePoloDataBaseHelper(context);
 	  }
 
 	  public void open() throws SQLException {
-	    database = dbHelper.getWritableDatabase();
+		  if (!dbOpen) {
+			  database = dbHelper.getWritableDatabase();
+			  dbOpen = true;
+		  }
 	  }
 
 	  public void close() {
-	    dbHelper.close();
+		  if (dbOpen) {
+			  dbHelper.close();
+			  dbOpen = false;
+		  }
+	  }
+	  
+	  public boolean isOpen() {
+		  return dbOpen;
 	  }
 
 	  public void insertPlayer(BikePoloPlayer player) {
@@ -118,4 +129,5 @@ public class PlayerDBDataSource {
 	    BikePoloPlayer player = new BikePoloPlayer(name, games, games_handicap, inPlay);
 	    return player;
 	  }
+	  	  
 }
