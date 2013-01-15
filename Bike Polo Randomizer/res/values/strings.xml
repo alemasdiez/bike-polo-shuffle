@@ -1,6 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Bike Polo Shuffle</string><string name="app_name_2line">Bike Polo\nShuffle</string>
+    <string name="app_name">Bike Polo Shuffle</string>
+    <string name="app_name_2line">Bike Polo\nShuffle</string>
     <string name="addPlayer">Add</string>
     <string name="nextGame">Play</string>
     <string name="NULL" />
@@ -19,9 +21,15 @@
     <string name="games">Games</string>
     <string name="rankAdjusted">Rank adjusted</string>
     <string name="logo_bpck">Logo BPCK</string>
-    <string name="nextGameTitle">Next game</string>
-    <string name="startTimer">Start Timer</string>
-    <string name="menuShowLastGame">Show Last Game</string>
-    <string name="lastGameTitle">Last Game</string>
+    
+    <string name="startGame">Start Game</string>
+    <string name="menuShowLastGame">Show Latest Game</string>
+    <string name="timerLeft">Time Left</string><string name="timerZero">00:00</string><string name="titleLatestGame">Latest Game</string><string name="titleNextGame">Next Game</string>
+    <string name="finishGame">Finish Game</string>
+    <string name="finishGameFirst">Finish current game first</string>
+    <string name="addPlayersFirst">Add players first</string>
+    <string name="notifGameOngoing">Bike Polo Game Ongoing</string>
+    <string name="notifGameEnd">Bike Polo Game Ended!</string>
+    
 
 </resources>
