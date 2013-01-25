@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 public class BikePoloPlayer {
+	private String id;
 	private String name;
 	private int games;
 	private int handicap; // value added to games due to missed games
@@ -32,7 +33,8 @@ public class BikePoloPlayer {
 	}
 	
 	
-	public BikePoloPlayer(String newName, int newGames, int newHandicap, boolean inPlay) {
+	public BikePoloPlayer(String newId, String newName, int newGames, int newHandicap, boolean inPlay) {
+		this.id = newId;
 		this.name = newName;
 		this.games = newGames;
 		this.plays = inPlay;
@@ -43,6 +45,14 @@ public class BikePoloPlayer {
 		return this.name;
 	}
 
+	String getId() {
+		return this.id;
+	}
+	
+	int getIdInt() {		
+		return Integer.parseInt(this.id);
+	}
+	
 	int getGames() {
 		return this.games;
 	}
@@ -88,24 +98,26 @@ public class BikePoloPlayer {
 	
 	@Override	
 	public boolean equals (Object otherObject) {
+		boolean result = false;
 		if (otherObject instanceof BikePoloPlayer) {
 			BikePoloPlayer otherPlayer = (BikePoloPlayer) otherObject;
 			if (otherPlayer == this) { // same object
-				return true;
+				result = true;
 			} else {
-				return otherPlayer.name.equals(name) &&
+				result = otherPlayer.name.equals(name) &&
 						otherPlayer.games == games &&
 						otherPlayer.handicap == handicap &&
-						otherPlayer.plays == plays;						
+						otherPlayer.plays == plays &&
+						otherPlayer.id.equals(id);						
 			}
 				
-		} else
-		return false;		
+		} 
+		return result;		
 	}
 	
 	@Override
 	public int hashCode() {
-		int hash = name.hashCode() | games | handicap;
+		int hash = name.hashCode() | games | handicap | id.hashCode();
 		if (!plays) {
 			hash = - hash;
 		}

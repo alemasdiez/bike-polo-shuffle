@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/prefNotifTitle"
+        android:summary="@string/prefNotif"
+        android:title="@string/prefNotifTitle" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/prefTimerUseTitle"
+        android:summary="@string/prefTimerUse"
+        android:title="@string/prefTimerUseTitle" />
+
+    <ListPreference
+        android:defaultValue="@string/prefTimerDefault"
+        android:dependency="@string/prefTimerUseTitle"
+        android:dialogTitle="@string/prefTimerInputTitle"
+        android:entries="@array/arrayGameTime"
+        android:entryValues="@array/arrayGameTime"
+        android:key="@string/prefTimerTitle"
+        android:negativeButtonText="@android:string/cancel"
+        android:positiveButtonText="@android:string/ok"
+        android:title="@string/prefTimerTitle" />
+
+</PreferenceScreen>

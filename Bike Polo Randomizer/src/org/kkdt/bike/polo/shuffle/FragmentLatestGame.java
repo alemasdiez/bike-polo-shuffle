@@ -32,9 +32,12 @@ public class FragmentLatestGame extends DialogFragment {
 	@Override
 	public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final DialogFragment fragment = this;
+        // get common App data
+        final BikePoloShuffleApp app = (BikePoloShuffleApp) getActivity().getApplication();	
 		// extract dialog parameters
 		boolean useTimer = false;
-		if ((ShuffleMain.getSettings(ShuffleMain.USE_TIMER) == ShuffleMain.YES)) {
+		if ((app.getSettings(BikePoloShuffleApp.USE_TIMER)
+				== BikePoloShuffleApp.YES)) {
 			useTimer = true;
 		}
         Bundle parameters = this.getArguments();
@@ -44,8 +47,6 @@ public class FragmentLatestGame extends DialogFragment {
         		dialogType = parameters.getInt(DIALOG_TYPE);
         	}
         }
-        // get common App data
-        BikePoloShuffleApp app = (BikePoloShuffleApp) getActivity().getApplication();	
         
         View view; // prepare fragment view
 		if (useTimer) {
@@ -64,8 +65,19 @@ public class FragmentLatestGame extends DialogFragment {
 			Button1.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
 					ShuffleMain parentAct = (ShuffleMain)getActivity(); // parent activity
-					parentAct.startGame(true); // start with timer
-					fragment.dismiss();					
+					if (parentAct != null) {
+						BikePoloShuffleApp localApp = (BikePoloShuffleApp) parentAct.getApplication();
+						if (localApp != null) {
+							// extract dialog parameters
+							boolean useTimer = false;
+							if ((localApp.getSettings(BikePoloShuffleApp.USE_TIMER)
+									== BikePoloShuffleApp.YES)) {
+								useTimer = true;
+							}
+							parentAct.startGame(useTimer); // start game
+						}
+					}
+					fragment.dismiss();		
 				}
 			});
 			buttonHandler.addView(Button1);
@@ -85,15 +97,19 @@ public class FragmentLatestGame extends DialogFragment {
 			getDialog().setTitle(R.string.titleLatestGame);
 			getDialog().setCanceledOnTouchOutside(true);
 			buttonHandler = (LinearLayout) view.findViewById(R.id.buttonHandler);
-			if ((useTimer) && (app.isTimerOngoing())) { // Timer already ongoing
+			if (app.isTimerOngoing()) { // Timer already ongoing
 				Button1 = new Button(getDialog().getContext());
 				Button1.setText(R.string.finishGame);
 				Button1.setOnClickListener(new View.OnClickListener() {
 					public void onClick(View view) {
 						ShuffleMain parentAct = (ShuffleMain)getActivity(); // parent activity
-						BikePoloShuffleApp localApp = (BikePoloShuffleApp) parentAct.getApplication();
-						localApp.stopTimer();
-						fragment.dismiss();					
+						if (parentAct != null) {
+							BikePoloShuffleApp localApp = (BikePoloShuffleApp) parentAct.getApplication();
+							if (localApp != null) {
+								localApp.stopTimer();
+							}
+						}
+						fragment.dismiss();						
 					}
 				});
 				buttonHandler.addView(Button1);
@@ -114,7 +130,7 @@ public class FragmentLatestGame extends DialogFragment {
 			TextView timerOutput = (TextView) view.findViewById(R.id.timerOutput);
 			switch (dialogType) {
 			case NEW_GAME:
-				int defaultTime = 1;// ShuffleMain.getSettings(ShuffleMain.DEFAULT_GAME_TIME);
+				int defaultTime = app.getSettings(BikePoloShuffleApp.DEFAULT_GAME_TIME);
 				timerOutput.setText(Integer.toString(defaultTime) + ":00");
 				app.setTimer(defaultTime, timerOutput);
 				break;

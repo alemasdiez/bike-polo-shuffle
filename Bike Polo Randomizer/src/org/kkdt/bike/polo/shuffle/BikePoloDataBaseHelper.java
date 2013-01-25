@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class BikePoloDataBaseHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "players.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 	
 	BikePoloDataBaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -14,15 +14,21 @@ public class BikePoloDataBaseHelper extends SQLiteOpenHelper {
 
 	public void onCreate(SQLiteDatabase db) {
         db.execSQL(PlayerDataBase.SQL_CREATE_ENTRIES);
+        db.execSQL(GameDataBase.SQL_CREATE_ENTRIES);
     }
 	
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // This database is only a cache for online data, so its upgrade policy is
-        // to simply to discard the data and start over
-    	db.execSQL(PlayerDataBase.SQL_DELETE_ENTRIES);
-    	onCreate(db);
+    	if (oldVersion == 2 && newVersion == 3) { 	// game DB added
+            db.execSQL(GameDataBase.SQL_CREATE_ENTRIES);	    		
+    	} else { // upgrade scheme not supported, recreate DB
+    		db.execSQL(PlayerDataBase.SQL_DELETE_ENTRIES);
+    		db.execSQL(GameDataBase.SQL_DELETE_ENTRIES);
+    		onCreate(db);
+    	}
     }
+    
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
+    
 }

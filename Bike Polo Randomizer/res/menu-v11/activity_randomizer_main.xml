@@ -1,8 +1,46 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    
-    <item android:id="@+id/menuNewGame" android:icon="@drawable/ic_bar_new_game" android:title="@string/nextGame" android:showAsAction="always|withText"></item><item android:id="@+id/menuAddPlayer" android:icon="@drawable/ic_bar_add_player" android:title="@string/addPlayer" android:showAsAction="ifRoom"></item><item android:id="@+id/menuShowLastGame" android:title="@string/menuShowLastGame" android:icon="@drawable/ic_bar_content_paste" android:showAsAction="ifRoom"></item><item android:id="@+id/menuClearPlayerList" android:showAsAction="never" android:title="@string/removeAllPlayers" android:titleCondensed="@string/removeAllPlayersShrt" android:icon="@drawable/ic_remove_all_players"></item><item android:id="@+id/menuResetGameCnt" android:title="@string/resetGameCnt" android:titleCondensed="@string/resetGameCntShort" android:icon="@drawable/ic_action_cut" android:showAsAction="never"></item>
-    
-    
-    
-    
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menuNewGame"
+        android:icon="@drawable/ic_bar_new_game"
+        android:showAsAction="always|withText"
+        android:title="@string/nextGame">
+    </item>
+    <item
+        android:id="@+id/menuAddPlayer"
+        android:icon="@drawable/ic_bar_add_player"
+        android:showAsAction="ifRoom"
+        android:title="@string/addPlayer">
+    </item>
+    <item
+        android:id="@+id/menuShowLastGame"
+        android:icon="@drawable/ic_bar_last_game"
+        android:showAsAction="ifRoom"
+        android:title="@string/menuShowLastGame">
+    </item>
+    <item
+        android:id="@+id/menuGameHistory"
+        android:icon="@drawable/ic_bar_content_paste"
+        android:showAsAction="ifRoom"
+        android:title="@string/menuGameHistory">
+    </item>        
+    <item
+        android:id="@+id/menuResetGames"
+        android:icon="@drawable/ic_action_cut"
+        android:showAsAction="never"
+        android:title="@string/resetGames">
+    </item>
+    <item
+        android:id="@+id/menuClearPlayerList"
+        android:icon="@drawable/ic_remove_all_players"
+        android:showAsAction="never"
+        android:title="@string/removeAllPlayers"
+        android:titleCondensed="@string/removeAllPlayersShrt">
+    </item>
+    <item
+        android:id="@+id/menuSettings"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/settings">
+    </item>
+
 </menu>

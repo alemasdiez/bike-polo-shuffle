@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,10 +26,6 @@ public class ShuffleMain extends FragmentActivity {
 	public static final String PLAYER_LIST_R = "PLAYER_LIST_R";
 	public static final String PLAYER_BLACK_LIST = "PLAYER_BLACK_LIST";
 	public static final String PLAYER_NUMBER = "PLAYER_NUMBER";	
-	public static final int YES = 1;
-	public static final int NO = 0;
-	public static final int USE_TIMER = 0;
-	public static final int DEFAULT_GAME_TIME = 1;
 	
 	private static final String SUPER_ARIEL = "Super Ariel";
 	private static final String CURRENT_DIALOG = "CURRENT_DIALOG";
@@ -73,7 +70,7 @@ public class ShuffleMain extends FragmentActivity {
 				}
 			}
 			);
-			String playerData = shownPlayer.getName(); 		
+			String playerData = shownPlayer.getName();			
 			playerName.setText(playerData);
 			playerName.setTag(position);
 			playerData = "" + shownPlayer.getGames();
@@ -101,40 +98,40 @@ public class ShuffleMain extends FragmentActivity {
     		List<BikePoloPlayer> latestGameL = new ArrayList<BikePoloPlayer>();
     		List<BikePoloPlayer> latestGameR = new ArrayList<BikePoloPlayer>();
         	if (savedInstanceState.containsKey(PLAYER_LIST_L)) { // latest game L team stored
-        		int[] playerNumbers = savedInstanceState.getIntArray(PLAYER_LIST_L);
-        		for (int i=0; i<playerNumbers.length; i++) {
-        			if ((playerNumbers[i]<players.size()) && (playerNumbers[i]>=0)) {
-        				latestGameL.add(players.get(playerNumbers[i]));
+        		int[] playerIds = savedInstanceState.getIntArray(PLAYER_LIST_L);
+        		for (int i=0; i<playerIds.length; i++) {
+        			if ((playerIds[i]<=players.size()) && (playerIds[i]>0)) {        				
+        				latestGameL.add(dataSource.getPlayer(Integer.toString(playerIds[i])));
         			} 
-        			else {
-        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
-        			}
+//        			else {
+//        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
+//        			}
         			
         		}
         	}
         	if (savedInstanceState.containsKey(PLAYER_LIST_R)) { // latest game R team stored
         		latestGameR.clear();	// clear list
-        		int[] playerNumbers = savedInstanceState.getIntArray(PLAYER_LIST_R);
-        		for (int i=0; i<playerNumbers.length; i++) {
-        			if ((playerNumbers[i]<players.size()) && (playerNumbers[i]>=0)) {
-        				latestGameR.add(players.get(playerNumbers[i]));
+        		int[] playerIds = savedInstanceState.getIntArray(PLAYER_LIST_R);
+        		for (int i=0; i<playerIds.length; i++) {
+        			if ((playerIds[i]<=players.size()) && (playerIds[i]>0)) {
+        				latestGameR.add(dataSource.getPlayer(Integer.toString(playerIds[i])));
         			} 
-        			else {
-        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
-        			}
+//        			else {
+//        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
+//        			}
         			
         		}
         	}
         	if (savedInstanceState.containsKey(PLAYER_BLACK_LIST)) { // black list stored
         		blackList.clear();	// clear list
-        		int[] playerNumbers = savedInstanceState.getIntArray(PLAYER_BLACK_LIST);
-        		for (int i=0; i<playerNumbers.length; i++) {
-        			if ((playerNumbers[i]<players.size()) && (playerNumbers[i]>=0)) {
-        				blackList.add(players.get(playerNumbers[i]));
+        		int[] playerIds = savedInstanceState.getIntArray(PLAYER_BLACK_LIST);
+        		for (int i=0; i<playerIds.length; i++) {
+        			if ((playerIds[i]<=players.size()) && (playerIds[i]>0)) {
+        				blackList.add(dataSource.getPlayer(Integer.toString(playerIds[i])));
         			} 
-        			else { 
-        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
-        			}
+//        			else { 
+//        				showToast("Fault. Wrong current player \n"+playerNumbers[i]);
+//        			}
         			
         		}
         	}
@@ -237,7 +234,7 @@ public class ShuffleMain extends FragmentActivity {
     		int[] currentGamePlayerIds = new int[latestGameL.size()];
     		int i = 0;
     		for (BikePoloPlayer player : latestGameL) {
-    			currentGamePlayerIds[i++] = players.indexOf(player); 
+    			currentGamePlayerIds[i++] = player.getIdInt(); 
     		}
     		outState.putIntArray(PLAYER_LIST_L, currentGamePlayerIds);
     	}
@@ -245,7 +242,7 @@ public class ShuffleMain extends FragmentActivity {
     		int[] currentGamePlayerIds = new int[latestGameR.size()];
     		int i = 0;
     		for (BikePoloPlayer player : latestGameR) {
-    			currentGamePlayerIds[i++] = players.indexOf(player); 
+    			currentGamePlayerIds[i++] = player.getIdInt(); 
     		}
     		outState.putIntArray(PLAYER_LIST_R, currentGamePlayerIds);    		
     	}
@@ -253,7 +250,7 @@ public class ShuffleMain extends FragmentActivity {
     		int[] currentGamePlayerIds = new int[blackList.size()];
     		int i = 0;
     		for (BikePoloPlayer player : blackList) {
-    			currentGamePlayerIds[i++] = players.indexOf(player); 
+    			currentGamePlayerIds[i++] = player.getIdInt(); 
     		}
     		outState.putIntArray(PLAYER_BLACK_LIST, currentGamePlayerIds);    		
     	}    	
@@ -327,7 +324,13 @@ public class ShuffleMain extends FragmentActivity {
     	for (BikePoloPlayer tPlayer : playersInGameR) {
 			tPlayer.playGame();
 			dataSource.updatePlayer(tPlayer);
-		}    	
+		}
+    	Time now = new Time();
+    	now.setToNow();
+		int duration = app.getSettings(BikePoloShuffleApp.DEFAULT_GAME_TIME);
+    	BikePoloGame latestGame = new BikePoloGame(playersInGameL, playersInGameR,
+    			now.format("%y-%m-%d %T"), duration); 
+    	dataSource.insertGame(latestGame);
 		redrawPlayers();
 		clearDialog();
 		if (useTimer) {
@@ -443,24 +446,11 @@ public class ShuffleMain extends FragmentActivity {
 			latestGame.setArguments(dialogParams);            
 			latestGame.show(getSupportFragmentManager(), buttonName);
     		currentDialog = LATEST_GAME;        		
+    	} else {    	// else - no last game players
+			showToast(getString(R.string.noGameHistory));
     	}
-    	// else - no last game players - do nothing
     }
     
-    public static int getSettings(int whichSetting) {
-    	int settingValue = 0;
-    	switch (whichSetting) {
-    	case USE_TIMER:
-    		settingValue = YES;
-    		break;
-    	case DEFAULT_GAME_TIME:
-    		settingValue = 10;
-    		break;
-    	default:
-    	}
-    	return settingValue;
-    }
-
     
     public void checkboxInPlayClick(View view) {
     	CheckBox clickedCheckBox = (CheckBox) view;
@@ -480,13 +470,14 @@ public class ShuffleMain extends FragmentActivity {
     	redrawPlayers();
     }
     
-    private void menuResetGameCntClick() {
-		showToast(getString(R.string.resetGameCntResult));
+    private void menuResetGamesClick() {
+		showToast(getString(R.string.resetGamesResult));
     	for (int i=0; i<players.size(); i++) {
     		BikePoloPlayer player = players.get(i); 
     		player.resetGames();
     		dataSource.updatePlayer(player);
     	}
+    	dataSource.deleteAllGames();
     	redrawPlayers();
     }
 
@@ -518,11 +509,24 @@ public class ShuffleMain extends FragmentActivity {
     	case R.id.menuShowLastGame:
     		latestGame();
         	return true;
-    	case R.id.menuResetGameCnt:
-    		menuResetGameCntClick();   		
+    	case R.id.menuGameHistory:
+    		List<BikePoloGame> gameData = dataSource.getAllGames();
+    		if (gameData.size() > 0) {
+    			Intent intent = new Intent(this, GameHistory.class);
+    			startActivity(intent);
+    		} else {
+    			showToast(getString(R.string.noGameHistory));
+    		}
+    		return true;    		
+    	case R.id.menuResetGames:
+    		menuResetGamesClick();   		
     		return true;
     	case R.id.menuClearPlayerList:
     		menuRemoveAllPlayersClick();
+    		return true;
+    	case R.id.menuSettings:
+    		Intent intent = new Intent(this, SettingsActivity.class);
+    		startActivity(intent);
     		return true;
     	default:
     		return super.onOptionsItemSelected(item);

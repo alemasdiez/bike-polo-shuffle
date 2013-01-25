@@ -9,6 +9,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.widget.TextView;
@@ -18,6 +20,11 @@ public class BikePoloShuffleApp extends Application
 	private static final int GAME_ONGOING = 1;
 	private static final int GAME_END = 2;	
 	public static final String SHOW_LAST_GAME = "SHOW_LAST_GAME";
+	public static final int NO = 0;
+	public static final int YES = 1;
+	public static final int USE_TIMER = 0;
+	public static final int DEFAULT_GAME_TIME = 1;
+	public static final int DISPLAY_NOTIFICATIONS = 2;
 	
 	private List<BikePoloPlayer> latestGameL = new ArrayList<BikePoloPlayer>();
 	private List<BikePoloPlayer> latestGameR = new ArrayList<BikePoloPlayer>();
@@ -77,59 +84,61 @@ public class BikePoloShuffleApp extends Application
 	
 	// notification handling	
     private void notifyUser(int type, String timeLeft) {
-    	activeNotifications |= type; // add to active notifications indicator
-    	String contentTitle = "";
-    	String contentText = "";
-    	int defaults = 0;
-    	int mId = R.id.timerLeft + type;
-    	boolean autocancel = true;
-    	boolean ongoing = false;
-    	switch (type) {
-    	case GAME_ONGOING:
-    		contentTitle = getString(R.string.notifGameOngoing);
-    		contentText = getString(R.string.timerLeft) + " " + timeLeft;
-    		ongoing = true;
-    		autocancel = false;
-    		break;
-    	case GAME_END:
-    		contentTitle = getString(R.string.notifGameEnd);
-    		defaults = Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS 
-    				| Notification.DEFAULT_SOUND;
-    		break;
-    	}
-    	NotificationCompat.Builder mBuilder =
-    	        new NotificationCompat.Builder(this)
-    			.setAutoCancel(autocancel)
-    			.setOngoing(ongoing)
-    			.setOnlyAlertOnce(true)    			
-    			.setPriority(Notification.PRIORITY_LOW)
-    	        .setSmallIcon(R.drawable.ic_bar_new_game)
-    	        .setDefaults(defaults)
-    	        .setContentTitle(contentTitle)
-    	        .setContentText(contentText);    		
-    	// Creates an explicit intent for an Activity in your app
-    	Intent resultIntent = new Intent(this, ShuffleMain.class);
-    	resultIntent.putExtra(SHOW_LAST_GAME, true);
+    	if (this.getSettings(DISPLAY_NOTIFICATIONS) == YES) { // notifications allowed
+    		activeNotifications |= type; // add to active notifications indicator
+    		String contentTitle = "";
+    		String contentText = "";
+    		int defaults = 0;
+    		int mId = R.id.timerLeft + type;
+    		boolean autocancel = true;
+    		boolean ongoing = false;
+    		switch (type) {
+    		case GAME_ONGOING:
+    			contentTitle = getString(R.string.notifGameOngoing);
+    			contentText = getString(R.string.timerLeft) + " " + timeLeft;
+    			ongoing = true;
+    			autocancel = false;
+    			break;
+    		case GAME_END:
+    			contentTitle = getString(R.string.notifGameEnd);
+    			defaults = Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS 
+    					| Notification.DEFAULT_SOUND;
+    			break;
+    		}
+    		NotificationCompat.Builder mBuilder =
+    				new NotificationCompat.Builder(this)
+    		.setAutoCancel(autocancel)
+    		.setOngoing(ongoing)
+    		.setOnlyAlertOnce(true)    			
+    		.setPriority(Notification.PRIORITY_LOW)
+    		.setSmallIcon(R.drawable.ic_bar_new_game)
+    		.setDefaults(defaults)
+    		.setContentTitle(contentTitle)
+    		.setContentText(contentText);    		
+    		// Creates an explicit intent for an Activity in your app
+    		Intent resultIntent = new Intent(this, ShuffleMain.class);
+    		resultIntent.putExtra(SHOW_LAST_GAME, true);
 
-    	// The stack builder object will contain an artificial back stack for the
-    	// started Activity.
-    	// This ensures that navigating backward from the Activity leads out of
-    	// your application to the Home screen.
-    	TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-    	// Adds the back stack for the Intent (but not the Intent itself)
-    	stackBuilder.addParentStack(ShuffleMain.class);
-    	// Adds the Intent that starts the Activity to the top of the stack
-    	stackBuilder.addNextIntent(resultIntent);
-    	PendingIntent resultPendingIntent =
-    	        stackBuilder.getPendingIntent(
-    	            0,
-    	            PendingIntent.FLAG_UPDATE_CURRENT
-    	        );
-    	mBuilder.setContentIntent(resultPendingIntent);
-    	NotificationManager mNotificationManager =
-    	    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-    	// mId allows you to update the notification later on.
-    	mNotificationManager.notify(mId, mBuilder.build());
+    		// The stack builder object will contain an artificial back stack for the
+    		// started Activity.
+    		// This ensures that navigating backward from the Activity leads out of
+    		// your application to the Home screen.
+    		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+    		// Adds the back stack for the Intent (but not the Intent itself)
+    		stackBuilder.addParentStack(ShuffleMain.class);
+    		// Adds the Intent that starts the Activity to the top of the stack
+    		stackBuilder.addNextIntent(resultIntent);
+    		PendingIntent resultPendingIntent =
+    				stackBuilder.getPendingIntent(
+    						0,
+    						PendingIntent.FLAG_UPDATE_CURRENT
+    						);
+    		mBuilder.setContentIntent(resultPendingIntent);
+    		NotificationManager mNotificationManager =
+    				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    		// mId allows you to update the notification later on.
+    		mNotificationManager.notify(mId, mBuilder.build());
+    	}
     }
 
     private void cancelNotify(int type) {
@@ -161,5 +170,29 @@ public class BikePoloShuffleApp extends Application
 		notifyUser(GAME_END,"");	// show game end notification
 		timerOutput.setText(timer.getTimeLeft());		
 	}
+
+	// Settings handling
+    public int getSettings(int whichSetting) {
+    	int settingValue = 0;
+    	SharedPreferences appPref = 
+    			PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    	switch (whichSetting) {
+    	case USE_TIMER:
+    		if (appPref.getBoolean(getString(R.string.prefTimerUseTitle), true)) {
+    			settingValue = YES;
+    		}    		
+    		break;
+    	case DEFAULT_GAME_TIME:    
+    		settingValue = Integer.parseInt((appPref.getString(getString(R.string.prefTimerTitle), "10")));
+    		break;
+    	case DISPLAY_NOTIFICATIONS:
+    		if (appPref.getBoolean(getString(R.string.prefNotifTitle), true)) {
+    			settingValue = YES;
+    		}
+    		break;
+    	default:
+    	}
+    	return settingValue;
+    }
 
 }

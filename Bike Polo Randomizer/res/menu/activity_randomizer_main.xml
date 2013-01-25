@@ -1,6 +1,30 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    
-    <item android:id="@+id/menuShowLastGame" android:title="@string/menuShowLastGame" android:icon="@drawable/ic_content_paste"></item><item android:id="@+id/menuClearPlayerList" android:title="@string/removeAllPlayers" android:titleCondensed="@string/removeAllPlayersShrt" android:icon="@drawable/ic_remove_all_players"></item><item android:id="@+id/menuResetGameCnt" android:title="@string/resetGameCnt" android:titleCondensed="@string/resetGameCntShort" android:icon="@drawable/ic_action_cut"></item>
-    
-    
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menuShowLastGame"
+        android:icon="@drawable/ic_last_game"
+        android:title="@string/menuShowLastGame">
+    </item>
+    <item
+        android:id="@+id/menuGameHistory"
+        android:icon="@drawable/ic_content_paste"
+        android:title="@string/menuGameHistory">
+    </item>    
+    <item
+        android:id="@+id/menuResetGames"
+        android:icon="@drawable/ic_action_cut"
+        android:title="@string/resetGames">
+    </item>
+    <item
+        android:id="@+id/menuClearPlayerList"
+        android:icon="@drawable/ic_remove_all_players"
+        android:title="@string/removeAllPlayers"
+        android:titleCondensed="@string/removeAllPlayersShrt">
+    </item>
+    <item
+        android:id="@+id/menuSettings"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/settings">
+    </item>
+
 </menu>
