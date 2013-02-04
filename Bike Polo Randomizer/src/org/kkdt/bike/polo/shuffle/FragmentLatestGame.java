@@ -22,6 +22,7 @@ public class FragmentLatestGame extends DialogFragment {
 	public static final int NO_DIALOG = 0;
 	public static final int NEW_GAME = 1;
 	public static final int LATEST_GAME = 2;
+	public static final int NEXT_GAME = 3;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -35,11 +36,6 @@ public class FragmentLatestGame extends DialogFragment {
         // get common App data
         final BikePoloShuffleApp app = (BikePoloShuffleApp) getActivity().getApplication();	
 		// extract dialog parameters
-		boolean useTimer = false;
-		if ((app.getSettings(BikePoloShuffleApp.USE_TIMER)
-				== BikePoloShuffleApp.YES)) {
-			useTimer = true;
-		}
         Bundle parameters = this.getArguments();
         int dialogType = 0; // Not in dialog
         if (parameters != null) {
@@ -47,6 +43,13 @@ public class FragmentLatestGame extends DialogFragment {
         		dialogType = parameters.getInt(DIALOG_TYPE);
         	}
         }
+		boolean useTimer = false;
+		if (dialogType != NEXT_GAME) { // next game dialog do not use timer
+			if ((app.getSettings(BikePoloShuffleApp.USE_TIMER)
+					== BikePoloShuffleApp.YES)) {
+				useTimer = true;
+			}
+		}
         
         View view; // prepare fragment view
 		if (useTimer) {
@@ -123,6 +126,19 @@ public class FragmentLatestGame extends DialogFragment {
 			});
 			buttonHandler.addView(Button2);
 			break;
+		case NEXT_GAME:
+			getDialog().setTitle(R.string.nextGame);
+			getDialog().setCanceledOnTouchOutside(true);
+			buttonHandler = (LinearLayout) view.findViewById(R.id.buttonHandler);
+			Button2 = new Button(getDialog().getContext());
+			Button2.setText(android.R.string.ok);
+			Button2.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View view) {
+					fragment.dismiss();					
+				}
+			});
+			buttonHandler.addView(Button2);
+			break;
 		default:
 		}
 		
@@ -136,12 +152,24 @@ public class FragmentLatestGame extends DialogFragment {
 				break;
 			case LATEST_GAME:
 				app.setTimerOutput(timerOutput);
+				break;
 			}
 		}
 
 		// prepare team columns       
-		final List<BikePoloPlayer> teamListL = app.getLatestGame(true);
-		final List<BikePoloPlayer> teamListR = app.getLatestGame(false);
+		final List<BikePoloPlayer> teamListL;
+		final List<BikePoloPlayer> teamListR;
+		switch (dialogType) {
+		case NEW_GAME:
+		case NEXT_GAME:
+			teamListL = app.getNextGame(true);
+			teamListR = app.getNextGame(false);
+			break;
+		case LATEST_GAME:
+		default:
+			teamListL = app.getLatestGame(true);
+			teamListR = app.getLatestGame(false);
+		}
 		ArrayAdapter<BikePoloPlayer> dAdapterL = new ArrayAdapter<BikePoloPlayer>(view.getContext(),
 				R.layout.list_new_game_item,  teamListL);		
 		ListView dListViewL = (ListView) view.findViewById(R.id.listViewTeamL);

@@ -9,12 +9,12 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-public class PlayerDBDataSource {
+public class BikePoloDBDataSource {
 	// Database fields
 	private SQLiteDatabase database;
 	private BikePoloDataBaseHelper dbHelper;
 	private String[] allPlayerColumns = { PlayerDataBase.ENTRY_ID, PlayerDataBase.PLAYER_NAME, 
-			PlayerDataBase.PLAYER_GAMES, PlayerDataBase.PLAYER_HANDICAP, PlayerDataBase.PLAYER_INPLAY};
+			PlayerDataBase.PLAYER_GAMES, PlayerDataBase.PLAYER_HANDICAP, PlayerDataBase.PLAYER_INPLAY, PlayerDataBase.PLAYER_MODVIEW};
 	private String[] allGameColumns = { GameDataBase.ENTRY_ID, GameDataBase.START_TIME, GameDataBase.END_TIME,
 			GameDataBase.DURATION, GameDataBase.RESULT_L, GameDataBase.SIZE_L,
 			GameDataBase.PLAYER_L1, GameDataBase.PLAYER_L2, GameDataBase.PLAYER_L3,
@@ -26,7 +26,7 @@ public class PlayerDBDataSource {
 	private boolean dbOpen;
 
 	// general DB handling
-	public PlayerDBDataSource(Context context) {
+	public BikePoloDBDataSource(Context context) {
 		dbHelper = new BikePoloDataBaseHelper(context);
 	}
 
@@ -53,7 +53,8 @@ public class PlayerDBDataSource {
 		String name = player.getName();
 		int games = player.getGames();
 		int handicap = player.getHandicap();		
-		boolean inPlay = player.ifPlays(); 
+		boolean inPlay = player.ifPlays();
+		boolean v2View = player.getModView();
 		ContentValues values = new ContentValues();
 		values.put(PlayerDataBase.PLAYER_NAME, name);
 		values.put(PlayerDataBase.PLAYER_GAMES, games);
@@ -61,6 +62,9 @@ public class PlayerDBDataSource {
 		long inPlayLong=0;
 		if (inPlay) {inPlayLong=1;}
 		values.put(PlayerDataBase.PLAYER_INPLAY, inPlayLong);
+		long v2ViewLong=0;
+		if (v2View) {v2ViewLong=1;}
+		values.put(PlayerDataBase.PLAYER_MODVIEW, v2ViewLong);
 		long insertId = database.insert(PlayerDataBase.TABLE_NAME, null,
 				values);
 		Cursor cursor = database.query(PlayerDataBase.TABLE_NAME,
@@ -75,6 +79,7 @@ public class PlayerDBDataSource {
 		int games = player.getGames();
 		int handicap = player.getHandicap();
 		boolean inPlay = player.ifPlays(); 
+		boolean v2View = player.getModView();
 		String[] paramArray = {name};
 		ContentValues values = new ContentValues();
 		values.put(PlayerDataBase.PLAYER_GAMES, games);
@@ -82,6 +87,9 @@ public class PlayerDBDataSource {
 		long inPlayLong=0;
 		if (inPlay) {inPlayLong=1;}
 		values.put(PlayerDataBase.PLAYER_INPLAY, inPlayLong);
+		long v2ViewLong=0;
+		if (v2View) {v2ViewLong=1;}
+		values.put(PlayerDataBase.PLAYER_MODVIEW, v2ViewLong);
 		long updateId = database.update(PlayerDataBase.TABLE_NAME, values,
 				PlayerDataBase.WHERE_NAME, paramArray);
 		Cursor cursor = database.query(PlayerDataBase.TABLE_NAME,
@@ -155,7 +163,9 @@ public class PlayerDBDataSource {
 		int games_handicap = (int)cursor.getLong(3);		
 		boolean inPlay = false;
 		if (cursor.getLong(4)>0) { inPlay = true; }
-		BikePoloPlayer player = new BikePoloPlayer(id, name, games, games_handicap, inPlay);
+		boolean modView = false;
+		if (cursor.getLong(5)>0) { modView = true; }
+		BikePoloPlayer player = new BikePoloPlayer(id, name, games, games_handicap, inPlay, modView);
 		return player;
 	}
 

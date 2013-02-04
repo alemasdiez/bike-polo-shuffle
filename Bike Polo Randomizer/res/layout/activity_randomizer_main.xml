@@ -21,7 +21,7 @@
         android:layout_alignParentTop="true"
         android:drawableRight="@drawable/ic_bike_polo_icon"
         android:onClick="nextGameButton"
-        android:text="@string/nextGame" />
+        android:text="@string/play" />
 
     <Button
         android:id="@+id/addPlayer"
@@ -42,43 +42,12 @@
         android:gravity="center_horizontal"
         android:text="@string/app_name_2line"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/addPlayer"
-        android:gravity="left"
-        android:text="@string/playQ"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/textView2"
-        android:layout_below="@+id/addPlayer"
-        android:paddingLeft="10dp"
-        android:gravity="left"
-        android:text="@string/name"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/addPlayer"
-        android:gravity="right"
-        android:text="@string/games"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
     
     <ListView
         android:id="@+id/listPlayers"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/textView1"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true" >
 

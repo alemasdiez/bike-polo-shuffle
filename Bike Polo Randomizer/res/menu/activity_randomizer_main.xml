@@ -9,6 +9,12 @@
         android:id="@+id/menuGameHistory"
         android:icon="@drawable/ic_content_paste"
         android:title="@string/menuGameHistory">
+    </item>
+    <item
+        android:id="@+id/menuGamePreview"
+        android:icon="@drawable/ic_next_game"
+        android:title="@string/menuGamePreview"
+        android:titleCondensed="@string/nextGame">
     </item>    
     <item
         android:id="@+id/menuResetGames"

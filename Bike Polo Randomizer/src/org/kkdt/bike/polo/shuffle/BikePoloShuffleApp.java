@@ -28,6 +28,8 @@ public class BikePoloShuffleApp extends Application
 	
 	private List<BikePoloPlayer> latestGameL = new ArrayList<BikePoloPlayer>();
 	private List<BikePoloPlayer> latestGameR = new ArrayList<BikePoloPlayer>();
+	private List<BikePoloPlayer> nextGameL = new ArrayList<BikePoloPlayer>();
+	private List<BikePoloPlayer> nextGameR = new ArrayList<BikePoloPlayer>();
 	private GameTimer timer;
 	private TextView timerOutput;
 	private int activeNotifications = 0;
@@ -49,6 +51,25 @@ public class BikePoloShuffleApp extends Application
 	public void clearLatestGame() {
 		latestGameL.clear();
 		latestGameR.clear();
+	}
+	
+	// Next game common handling
+	public List<BikePoloPlayer> getNextGame(boolean left) {
+		if (left) {
+			return nextGameL;
+		} else {
+			return nextGameR;
+		}
+	}
+	
+	public void setNextGame(List<BikePoloPlayer> teamL, List<BikePoloPlayer> teamR) {
+		nextGameL = teamL;
+		nextGameR = teamR;
+	}
+	
+	public void clearNextGame() {
+		nextGameL.clear();
+		nextGameR.clear();
 	}
 	
 	// Timer common handling

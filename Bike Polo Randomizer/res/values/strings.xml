@@ -4,7 +4,7 @@
     <string name="app_name">Bike Polo Shuffle</string>
     <string name="app_name_2line">Bike Polo\nShuffle</string>
     <string name="addPlayer">Add</string>
-    <string name="nextGame">Play</string>
+    <string name="play">Play</string>
     <string name="NULL" />
     <string name="zero">0</string>
     <string name="enterName">Enter Player Name</string>
@@ -66,5 +66,9 @@
     <string name="title_activity_game_history">Game History</string>
     <string name="menuGameHistory">Game History</string>
     <string name="noGameHistory">No game history yet</string>
-    
+    <string name="menuGamePreview">Preview Next Game</string>
+    <string name="nextGame">Next Game</string>
+    <string name="imgInPlay">Player in game indicator</string>
+    <string name="imgTeam">Team indicator</string>
+    <string name="imgGoals">Goals indicator</string>
 </resources>

@@ -4,7 +4,7 @@
         android:id="@+id/menuNewGame"
         android:icon="@drawable/ic_bar_new_game"
         android:showAsAction="always|withText"
-        android:title="@string/nextGame">
+        android:title="@string/play">
     </item>
     <item
         android:id="@+id/menuAddPlayer"
@@ -23,7 +23,14 @@
         android:icon="@drawable/ic_bar_content_paste"
         android:showAsAction="ifRoom"
         android:title="@string/menuGameHistory">
-    </item>        
+    </item>   
+    <item
+        android:id="@+id/menuGamePreview"
+        android:icon="@drawable/ic_bar_next_game"
+        android:showAsAction="ifRoom"
+        android:title="@string/menuGamePreview"
+        android:titleCondensed="@string/nextGame">
+    </item>      
     <item
         android:id="@+id/menuResetGames"
         android:icon="@drawable/ic_action_cut"

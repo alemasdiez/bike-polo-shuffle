@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import android.widget.ViewFlipper;
+
 public class BikePoloPlayer {
 	private String id;
 	private String name;
 	private int games;
 	private int handicap; // value added to games due to missed games
 	private boolean plays;
+	private boolean modView; // player modification view visible
 	public static final int MODE_RANDOM = 0;
 	public static final int MODE_EVEN = 1;
 
@@ -33,12 +36,14 @@ public class BikePoloPlayer {
 	}
 	
 	
-	public BikePoloPlayer(String newId, String newName, int newGames, int newHandicap, boolean inPlay) {
+	public BikePoloPlayer(String newId, String newName, int newGames, 
+			int newHandicap, boolean inPlay, boolean newModView) {
 		this.id = newId;
 		this.name = newName;
 		this.games = newGames;
 		this.plays = inPlay;
 		this.handicap = newHandicap;
+		this.modView = newModView;
 	}
 
 	String getName() {
@@ -89,7 +94,21 @@ public class BikePoloPlayer {
 	void setPlays(boolean ifPlays) {
 		this.plays = ifPlays;
 	}
+	
+	boolean getModView() {
+		return this.modView;
+	}
 
+	void switchView(ViewFlipper vf, boolean left) {
+		if (vf != null) {
+			if (left) {
+				vf.showNext();
+			} else {
+				vf.showPrevious();
+			}
+		}
+		modView = !modView; 
+	}
 
 	@Override
 	public String toString() {

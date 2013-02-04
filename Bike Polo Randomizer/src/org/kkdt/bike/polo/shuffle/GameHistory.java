@@ -13,12 +13,12 @@ import android.widget.ListView;
 import android.widget.TwoLineListItem;
 
 public class GameHistory extends Activity {
-	private PlayerDBDataSource dataSource;
+	private BikePoloDBDataSource dataSource;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dataSource = new PlayerDBDataSource(this);
+		dataSource = new BikePoloDBDataSource(this);
 		dataSource.open();		
 
 		setContentView(R.layout.activity_game_history);
