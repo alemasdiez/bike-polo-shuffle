@@ -23,4 +23,10 @@
         android:positiveButtonText="@android:string/ok"
         android:title="@string/prefTimerTitle" />
 
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/prefTeamTitle"
+        android:summary="@string/prefTeam"
+        android:title="@string/prefTeamTitle" />
+    
 </PreferenceScreen>

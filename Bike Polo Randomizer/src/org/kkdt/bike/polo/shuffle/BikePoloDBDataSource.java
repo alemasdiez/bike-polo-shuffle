@@ -14,7 +14,8 @@ public class BikePoloDBDataSource {
 	private SQLiteDatabase database;
 	private BikePoloDataBaseHelper dbHelper;
 	private String[] allPlayerColumns = { PlayerDataBase.ENTRY_ID, PlayerDataBase.PLAYER_NAME, 
-			PlayerDataBase.PLAYER_GAMES, PlayerDataBase.PLAYER_HANDICAP, PlayerDataBase.PLAYER_INPLAY, PlayerDataBase.PLAYER_MODVIEW};
+			PlayerDataBase.PLAYER_GAMES, PlayerDataBase.PLAYER_HANDICAP, PlayerDataBase.PLAYER_INPLAY, 
+			PlayerDataBase.PLAYER_MODVIEW, PlayerDataBase.PLAYER_TEAM };
 	private String[] allGameColumns = { GameDataBase.ENTRY_ID, GameDataBase.START_TIME, GameDataBase.END_TIME,
 			GameDataBase.DURATION, GameDataBase.RESULT_L, GameDataBase.SIZE_L,
 			GameDataBase.PLAYER_L1, GameDataBase.PLAYER_L2, GameDataBase.PLAYER_L3,
@@ -49,13 +50,15 @@ public class BikePoloDBDataSource {
 	}
 
 	// Player handling
-	public void insertPlayer(BikePoloPlayer player) {
+	
+	private ContentValues preparePlayerData(BikePoloPlayer player) {
+		ContentValues values = new ContentValues();
 		String name = player.getName();
 		int games = player.getGames();
 		int handicap = player.getHandicap();		
 		boolean inPlay = player.ifPlays();
 		boolean v2View = player.getModView();
-		ContentValues values = new ContentValues();
+		String teamName = player.getTeamName();
 		values.put(PlayerDataBase.PLAYER_NAME, name);
 		values.put(PlayerDataBase.PLAYER_GAMES, games);
 		values.put(PlayerDataBase.PLAYER_HANDICAP, handicap);
@@ -65,6 +68,12 @@ public class BikePoloDBDataSource {
 		long v2ViewLong=0;
 		if (v2View) {v2ViewLong=1;}
 		values.put(PlayerDataBase.PLAYER_MODVIEW, v2ViewLong);
+		values.put(PlayerDataBase.PLAYER_TEAM, teamName);
+		return values;
+	}
+	
+	public void insertPlayer(BikePoloPlayer player) {
+		ContentValues values = preparePlayerData(player);
 		long insertId = database.insert(PlayerDataBase.TABLE_NAME, null,
 				values);
 		Cursor cursor = database.query(PlayerDataBase.TABLE_NAME,
@@ -76,20 +85,8 @@ public class BikePoloDBDataSource {
 
 	public void updatePlayer(BikePoloPlayer player) {
 		String name = player.getName();
-		int games = player.getGames();
-		int handicap = player.getHandicap();
-		boolean inPlay = player.ifPlays(); 
-		boolean v2View = player.getModView();
 		String[] paramArray = {name};
-		ContentValues values = new ContentValues();
-		values.put(PlayerDataBase.PLAYER_GAMES, games);
-		values.put(PlayerDataBase.PLAYER_HANDICAP, handicap);
-		long inPlayLong=0;
-		if (inPlay) {inPlayLong=1;}
-		values.put(PlayerDataBase.PLAYER_INPLAY, inPlayLong);
-		long v2ViewLong=0;
-		if (v2View) {v2ViewLong=1;}
-		values.put(PlayerDataBase.PLAYER_MODVIEW, v2ViewLong);
+		ContentValues values = preparePlayerData(player);
 		long updateId = database.update(PlayerDataBase.TABLE_NAME, values,
 				PlayerDataBase.WHERE_NAME, paramArray);
 		Cursor cursor = database.query(PlayerDataBase.TABLE_NAME,
@@ -105,9 +102,14 @@ public class BikePoloDBDataSource {
 		database.delete(PlayerDataBase.TABLE_NAME, PlayerDataBase.WHERE_NAME, paramArray);
 	}
 
-	public List<BikePoloPlayer> getAllPlayers() {
+	public List<BikePoloPlayer> getAllPlayers(boolean teamSort) {
 		List<BikePoloPlayer> players = new ArrayList<BikePoloPlayer>();
-		String orderBy  = PlayerDataBase.PLAYER_NAME + PlayerDataBase.COLLATE;  	          
+		String orderBy;
+		if (teamSort) { // sort by TeamName
+			orderBy  = PlayerDataBase.PLAYER_TEAM + PlayerDataBase.COLLATE;  	          
+		} else { // default sort by player name
+			orderBy  = PlayerDataBase.PLAYER_NAME + PlayerDataBase.COLLATE;
+		}
 		Cursor cursor = database.query(PlayerDataBase.TABLE_NAME,
 				allPlayerColumns, null, null, null, null, orderBy);
 
@@ -165,10 +167,35 @@ public class BikePoloDBDataSource {
 		if (cursor.getLong(4)>0) { inPlay = true; }
 		boolean modView = false;
 		if (cursor.getLong(5)>0) { modView = true; }
-		BikePoloPlayer player = new BikePoloPlayer(id, name, games, games_handicap, inPlay, modView);
+		String teamName = cursor.getString(6);
+		BikePoloPlayer player = new BikePoloPlayer(id, name, games, 
+				games_handicap, inPlay, modView, teamName);
 		return player;
 	}
 
+	// Team handling (based on PlayerDataBase currently)
+	public List<String> getAllTeamNames() {
+		List<String> teamNames = new ArrayList<String>();
+		String[] teamNameColumn = {PlayerDataBase.PLAYER_TEAM}; 
+		String orderBy  = PlayerDataBase.PLAYER_TEAM + PlayerDataBase.COLLATE;  
+		boolean distinct = true;
+		Cursor cursor = database.query(distinct, PlayerDataBase.TABLE_NAME,
+				teamNameColumn, null, null, null, null, orderBy, null);
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			String team = cursor.getString(0);
+			if (team != null) {
+				if (!team.equals("")) {
+					teamNames.add(team);
+				}
+			}
+			cursor.moveToNext();
+		}
+		// Make sure to close the cursor
+		cursor.close();
+		return teamNames;
+	}
+	
 	// Game handling
 	public void insertGame(BikePoloGame game) {
 		String startTime = game.getStartTime();

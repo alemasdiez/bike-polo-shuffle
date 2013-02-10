@@ -25,6 +25,7 @@ public class BikePoloShuffleApp extends Application
 	public static final int USE_TIMER = 0;
 	public static final int DEFAULT_GAME_TIME = 1;
 	public static final int DISPLAY_NOTIFICATIONS = 2;
+	public static final int TEAM_PLAY = 3;
 	
 	private List<BikePoloPlayer> latestGameL = new ArrayList<BikePoloPlayer>();
 	private List<BikePoloPlayer> latestGameR = new ArrayList<BikePoloPlayer>();
@@ -209,6 +210,11 @@ public class BikePoloShuffleApp extends Application
     	case DISPLAY_NOTIFICATIONS:
     		if (appPref.getBoolean(getString(R.string.prefNotifTitle), true)) {
     			settingValue = YES;
+    		}
+    		break;
+    	case TEAM_PLAY:
+    		if (appPref.getBoolean(getString(R.string.prefTeamTitle), true)) {
+    			settingValue = YES;    		
     		}
     		break;
     	default:

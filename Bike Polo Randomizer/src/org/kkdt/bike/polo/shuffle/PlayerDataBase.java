@@ -11,6 +11,7 @@ public abstract class PlayerDataBase implements BaseColumns {
 	    public static final String PLAYER_HANDICAP = "playerGamesRank"; // Rank = Games + Handicap
 	    public static final String PLAYER_INPLAY = "playerInPlay";
 	    public static final String PLAYER_MODVIEW = "playerModView";
+	    public static final String PLAYER_TEAM = "playerTeamName";
 	    private static final String TEXT_TYPE = " TEXT";
 	    private static final String LONG_TYPE = " INTEGER";
 	    private static final String COMMA_SEP = ",";
@@ -22,7 +23,8 @@ public abstract class PlayerDataBase implements BaseColumns {
 	        PLAYER_GAMES + LONG_TYPE + COMMA_SEP +
 	        PLAYER_HANDICAP + LONG_TYPE + COMMA_SEP +
 	        PLAYER_INPLAY + LONG_TYPE + COMMA_SEP +
-	        PLAYER_MODVIEW + LONG_TYPE +
+	        PLAYER_MODVIEW + LONG_TYPE + COMMA_SEP +
+	        PLAYER_TEAM + TEXT_TYPE +
 	        " )";
 
 	    public static final String SQL_DELETE_ENTRIES =
@@ -35,7 +37,9 @@ public abstract class PlayerDataBase implements BaseColumns {
 	    
 	    public static final String ADD_VIEW_COLUMN = "ALTER TABLE " + TABLE_NAME + 
 	    		" ADD " + PLAYER_MODVIEW + LONG_TYPE;
-	    	    	    
+	    public static final String ADD_TEAM_COLUMN = "ALTER TABLE " + TABLE_NAME + 
+	    		" ADD " + PLAYER_TEAM + TEXT_TYPE;
+	   
 	 // Prevents the class from being instantiated.
 	    private PlayerDataBase() {}
 }

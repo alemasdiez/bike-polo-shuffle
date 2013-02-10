@@ -38,7 +38,10 @@
     <string name="prefTimerUse">Use timer?</string>
     <string name="prefTimerTitle">Timer value</string>
     <string name="prefTimerInputTitle">Game time</string>
-
+    <string name="prefTimerDefault">10</string>
+    <string name="prefTeamTitle">Team play</string>
+    <string name="prefTeam">Teams play together</string>
+    
     <string-array name="arrayGameTime">
         <item>1</item>
         <item>2</item>
@@ -62,7 +65,6 @@
         <item>60</item>
     </string-array>
 
-    <string name="prefTimerDefault">10</string>
     <string name="title_activity_game_history">Game History</string>
     <string name="menuGameHistory">Game History</string>
     <string name="noGameHistory">No game history yet</string>
@@ -71,4 +73,10 @@
     <string name="imgInPlay">Player in game indicator</string>
     <string name="imgTeam">Team indicator</string>
     <string name="imgGoals">Goals indicator</string>
+    <string name="imgRemove">Remove Player Button</string>
+    <string name="at">\@</string>
+    <string name="newTeam">New Team</string>
+    <string name="noTeam">No Team</string>
+    <string name="nameErr">Incorrect Name</string>
+    <string name="tooManyPlayers">Too Many Players In Team</string>
 </resources>

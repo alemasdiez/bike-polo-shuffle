@@ -18,53 +18,60 @@
             android:duplicateParentState="true"
             android:paddingLeft="5dip"
             android:paddingRight="5dip"
-            android:text="@string/NULL" />
+            android:text="@string/NULL"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="left"
-            android:orientation="horizontal" >
-            
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left" >
+
+            <!-- Games Indicator to the right -->
+
+            <TextView
+                android:id="@+id/gamesPlayedOnList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:paddingRight="5dip"
+                android:text="@string/zero" />
+
             <ImageView
-                android:id="@+id/imgTeam"
+                android:id="@+id/gamesIconOnList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/imgTeam"
-                android:src="@drawable/ic_team" />
-			
-			<TextView
-                android:id="@+id/teamOnList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/NULL" />
+                android:layout_toLeftOf="@+id/gamesPlayedOnList"
+                android:contentDescription="@string/imgInPlay"
+                android:src="@drawable/ic_bar_new_game" />
+
+            <!-- Goals Indicator to the left from games -->
 
             <TextView
                 android:id="@+id/goalsOnList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/gamesIconOnList"
                 android:text="@string/NULL" />
 
-            <!-- Padding -->
-			<View              
-                android:layout_height="wrap_content"
-                android:layout_width="0.0dp"
-                android:layout_weight="1.0"
-                />
-            
-            <ImageView 
-                android:layout_height="wrap_content"
+            <!-- Team to the left, last because can take lots of space -->
+
+            <ImageView
+                android:id="@+id/imgTeam"
                 android:layout_width="wrap_content"
-                android:src="@drawable/ic_bar_new_game"  
-                android:contentDescription="@string/imgGoals"              
-                />
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:contentDescription="@string/imgTeam"
+                android:src="@drawable/ic_team" />
+
             <TextView
-                android:id="@+id/gamesPlayedOnList"
-                android:layout_height="wrap_content"
+                android:id="@+id/teamOnList"
                 android:layout_width="wrap_content"
-                android:paddingRight="5dip"
-                android:text="@string/zero" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/goalsOnList"
+                android:layout_toRightOf="@+id/imgTeam"
+                android:ellipsize="end"
+                android:text="@string/NULL" />
+        </RelativeLayout>
     </LinearLayout>
 
     <!-- View 2 - Player modification -->
@@ -72,25 +79,73 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="left" >
-
-        <CheckBox
-            android:id="@+id/checkboxInPlayv2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:onClick="checkboxInPlayClick"
-            android:text="@string/NULL" />
+        android:orientation="vertical" >
 
         <TextView
             android:id="@+id/playerNameOnListv2"
-            android:layout_width="0dip"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0"
+            android:layout_gravity="center_vertical"
             android:duplicateParentState="true"
             android:paddingLeft="5dip"
             android:paddingRight="5dip"
-            android:text="@string/NULL" />
+            android:text="@string/NULL"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="left" >
+
+                           <ImageView
+                android:id="@+id/gameIconOnList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"                
+                android:layout_alignParentLeft="true"
+                android:contentDescription="@string/imgInPlay"
+                android:src="@drawable/ic_bar_new_game" />
+
+            <CheckBox
+                android:id="@+id/checkboxInPlayv2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleX="0.80"
+				android:scaleY="0.80"                
+                android:layout_gravity="center_vertical"
+                android:layout_toRightOf="@+id/gameIconOnList"               
+                android:checked="true"
+                android:onClick="checkboxInPlayClick"
+                android:text="@string/NULL" />
+ 
+               <ImageView
+                android:id="@+id/teamIconOnList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"                
+                android:layout_toRightOf="@+id/checkboxInPlayv2"               
+                android:contentDescription="@string/imgTeam"
+                android:src="@drawable/ic_team" />
+            
+            <ImageView
+                android:id="@+id/removePlayerOnList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/imgRemove"
+                android:onClick="removePlayerClick"
+                android:src="@drawable/ic_remove_player" />
+
+            <Spinner
+                android:id="@+id/teamSelectOnList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleX="0.80"
+				android:scaleY="0.80"                
+                android:layout_gravity="center_vertical"
+                android:layout_toRightOf="@+id/teamIconOnList"
+                android:layout_toLeftOf="@+id/removePlayerOnList" />
+ 
+        </RelativeLayout>
     </LinearLayout>
 
 </ViewFlipper>

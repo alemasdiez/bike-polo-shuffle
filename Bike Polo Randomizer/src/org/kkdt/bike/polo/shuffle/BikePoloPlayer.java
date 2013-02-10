@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import android.content.Context;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ViewFlipper;
 
 public class BikePoloPlayer {
@@ -13,6 +16,7 @@ public class BikePoloPlayer {
 	private int handicap; // value added to games due to missed games
 	private boolean plays;
 	private boolean modView; // player modification view visible
+	private String teamName;
 	public static final int MODE_RANDOM = 0;
 	public static final int MODE_EVEN = 1;
 
@@ -26,6 +30,8 @@ public class BikePoloPlayer {
 		this.games = 0;
 		this.handicap = 0;
 		this.plays = true;
+		this.modView = false;
+		this.teamName = null;
 	}
 
 	BikePoloPlayer(String newName, int newHandicap) {
@@ -33,17 +39,23 @@ public class BikePoloPlayer {
 		this.games = 0;
 		this.handicap = newHandicap;
 		this.plays = true;
+		this.modView = false;
+		this.teamName = null;
 	}
 	
 	
 	public BikePoloPlayer(String newId, String newName, int newGames, 
-			int newHandicap, boolean inPlay, boolean newModView) {
+			int newHandicap, boolean inPlay, boolean newModView, String newTeamName) {
 		this.id = newId;
 		this.name = newName;
 		this.games = newGames;
 		this.plays = inPlay;
 		this.handicap = newHandicap;
 		this.modView = newModView;
+		if (newTeamName == "") {
+			newTeamName = null;
+		}		
+		this.teamName = newTeamName;
 	}
 
 	String getName() {
@@ -102,12 +114,38 @@ public class BikePoloPlayer {
 	void switchView(ViewFlipper vf, boolean left) {
 		if (vf != null) {
 			if (left) {
+				Context context = vf.getContext();
+				Animation animFlipInLeft = AnimationUtils.loadAnimation(context, R.anim.flip_in_left);
+				Animation animFlipOutLeft = AnimationUtils.loadAnimation(context, R.anim.flip_out_left);
+				vf.setInAnimation(animFlipInLeft);
+		        vf.setOutAnimation(animFlipOutLeft);				
 				vf.showNext();
+				vf.clearAnimation();
 			} else {
+				Context context = vf.getContext();
+				Animation animFlipInRight = AnimationUtils.loadAnimation(context, R.anim.flip_in_right);
+				Animation animFlipOutRight = AnimationUtils.loadAnimation(context, R.anim.flip_out_right);
+				vf.setInAnimation(animFlipInRight);
+		        vf.setOutAnimation(animFlipOutRight);				
 				vf.showPrevious();
+				vf.clearAnimation();
 			}
 		}
 		modView = !modView; 
+	}
+	
+	String getTeamName() {
+		if (this.teamName == null) {
+			return "";
+		}
+		return this.teamName;
+	}
+	
+	void setTeamName(String newTeamName) {
+		if (newTeamName == "") {
+			newTeamName = null;
+		}
+		this.teamName = newTeamName;
 	}
 
 	@Override
