@@ -19,15 +19,17 @@ public class BikePoloDataBaseHelper extends SQLiteOpenHelper {
 	
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     	boolean upgradeSupported = false;
-    	if (oldVersion < 4 && newVersion >= 4){ // alternate view added to player
-    		db.execSQL(PlayerDataBase.ADD_VIEW_COLUMN);
-    		db.execSQL(PlayerDataBase.ADD_TEAM_COLUMN);
-    		upgradeSupported = true;
+    	if (newVersion == DATABASE_VERSION) { // update to current version
+    		if (oldVersion < 4){ // alternate view added to player
+    			db.execSQL(PlayerDataBase.ADD_VIEW_COLUMN);
+    			db.execSQL(PlayerDataBase.ADD_TEAM_COLUMN);
+    			upgradeSupported = true;
+    		}
+    		if (oldVersion < 3) { 	// game DB added
+    			db.execSQL(GameDataBase.SQL_CREATE_ENTRIES);           
+    			upgradeSupported = true;
+    		} 
     	}
-    	if (oldVersion < 3 && newVersion >= 3) { 	// game DB added
-            db.execSQL(GameDataBase.SQL_CREATE_ENTRIES);           
-    		upgradeSupported = true;
-    	} 
     	if (!upgradeSupported) { // upgrade scheme not supported, recreate DB
     		db.execSQL(PlayerDataBase.SQL_DELETE_ENTRIES);
     		db.execSQL(GameDataBase.SQL_DELETE_ENTRIES);

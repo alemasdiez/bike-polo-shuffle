@@ -168,7 +168,7 @@ public class ShuffleMain extends FragmentActivity {
 				playerName.setPaintFlags(playerName.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 			}
 			playerTeam.setText(playerTeamName);
-			if (playerTeamName == null) { // hide team icon if no team defined for player
+			if (playerTeamName.equals("")) { // hide team icon if no team defined for player
 				playerTeamImg.setVisibility(View.INVISIBLE);
 			} else { // unhide
 				playerTeamImg.setVisibility(View.VISIBLE);
@@ -605,7 +605,9 @@ public class ShuffleMain extends FragmentActivity {
     			}
     		} else { // team draw
     			int teamSize = NUM_PLAYERS / 2;
-    			List<BikePoloPlayer> playersInGame = drawPlayers(players, 1); // draw 1 player
+    			List<BikePoloPlayer> playersInGame = drawPlayers(players, NUM_PLAYERS); // draw to check number of players available    			
+				int halfNumPlayers = (int)Math.ceil((double)playersInGame.size()/2);        
+    			playersInGame = drawPlayers(players, 1); // draw 1 player for L team
     			List<BikePoloPlayer> remainingPlayers = new ArrayList<BikePoloPlayer>();
     			if (playersInGame.size() == 1) { // player found
     				nextGameL.clear();
@@ -617,7 +619,9 @@ public class ShuffleMain extends FragmentActivity {
     						if (player.ifPlays()) {
     							if (player.getTeamName().equals(selectedTeam)) {
     								if (playersInGame.size() < teamSize) {
-    									playersInGame.add(player);
+    									if (playersInGame.size() < halfNumPlayers) {
+    										playersInGame.add(player);
+    									}
     								}
     							}
     						}
@@ -632,10 +636,14 @@ public class ShuffleMain extends FragmentActivity {
     					selectedTeam = selectedPlayer.getTeamName();
     					for (BikePoloPlayer player : players) {
     						if (player != selectedPlayer) {
-    							if (player.getTeamName().equals(selectedTeam)) {
-    								if (playersInGame.size() < teamSize) {
-    									if (!nextGameL.contains(player)) {
-    										playersInGame.add(player);
+        						if (player.ifPlays()) {
+        							if (player.getTeamName().equals(selectedTeam)) {
+        								if (playersInGame.size() < teamSize) {
+        									if (playersInGame.size() < halfNumPlayers) {
+        										if (!nextGameL.contains(player)) {
+            										playersInGame.add(player);
+            									}
+        									}
     									}
     								}
     							}    						
