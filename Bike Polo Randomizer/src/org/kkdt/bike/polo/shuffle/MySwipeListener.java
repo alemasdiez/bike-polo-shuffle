@@ -7,9 +7,9 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 
 public abstract class MySwipeListener implements OnTouchListener {
-	private static final int SWIPE_MIN_DISTANCE = 60;
+	private static final int SWIPE_MIN_DISTANCE = 50;
 	private static final int SWIPE_MAX_OFF_PATH = 60;
-	private static final int SWIPE_THRESHOLD_VELOCITY = 40;	
+	private static final int SWIPE_THRESHOLD_VELOCITY = 20;	
 	private final GestureDetector gdt;
 	private View v;
 
@@ -24,6 +24,12 @@ public abstract class MySwipeListener implements OnTouchListener {
 	}
 
 	private final class GestureListener extends SimpleOnGestureListener {
+
+        @Override
+        public boolean onDown(MotionEvent e) { // needed to process onClick or onSelect
+            return true;
+        }		
+		
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 				float velocityY) {
@@ -44,18 +50,11 @@ public abstract class MySwipeListener implements OnTouchListener {
 				return true;
 
 			} 
-			//		else if (Math.abs(dX)<SWIPE_MAX_OFF_PATH &&
-			//				Math.abs(velocityY)>=SWIPE_THRESHOLD_VELOCITY &&
-			//				Math.abs(dY)>=SWIPE_MIN_DISTANCE ) {
-			//
-			//			if (dY>0) {
-			//				// Up swipe
-			//			} else {
-			//				// Left swipe
-			//			}
-			//			return true;
-			//		}
-
+			if (dX>0) {
+				onRightSwipeAttempt(v);
+			} else {
+				onLeftSwipeAttempt(v);
+			}
 			return false;
 
 		}
@@ -64,6 +63,10 @@ public abstract class MySwipeListener implements OnTouchListener {
 	public abstract void onLeftSwipe(View v);
 
 	public abstract void onRightSwipe(View v);
+	
+	public void onRightSwipeAttempt(View v) {};		
+	
+	public void onLeftSwipeAttempt(View v) {};			
 }
 
 

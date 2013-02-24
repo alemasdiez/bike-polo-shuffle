@@ -81,8 +81,7 @@ public class ShuffleMain extends FragmentActivity {
 			Spinner teamSelect = (Spinner) v.findViewById(R.id.teamSelectOnList);
 			ImageView playerRemoveImg = (ImageView) v.findViewById(R.id.removePlayerOnList);
 			
-			v.setTag(position);
-			v.setOnTouchListener(new MySwipeListener(v) {
+			MySwipeListener swiper = new MySwipeListener(v) {
 				
 				public void onLeftSwipe(View v) {
 					int whichPlayer = (Integer)v.getTag();
@@ -91,7 +90,7 @@ public class ShuffleMain extends FragmentActivity {
 						BikePoloPlayer player = players.get(whichPlayer);
 						player.switchView(vf, LEFT);
 						dataSource.updatePlayer(player);
-					} 					
+					} 								
 				}
 				public void onRightSwipe(View v) {
 					int whichPlayer = (Integer)v.getTag();
@@ -102,8 +101,27 @@ public class ShuffleMain extends FragmentActivity {
 						dataSource.updatePlayer(player);
 					} 					
 				}
-			});
-			teamSelect.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+				public void onRightSwipeAttempt(View v) {
+					int whichPlayer = (Integer)v.getTag();
+					ViewFlipper vf = (ViewFlipper) v.findViewById(R.id.ViewFlipperPlayerList);
+					if (vf != null) {
+						BikePoloPlayer player = players.get(whichPlayer);
+						player.switchViewAttempt(vf, RIGHT);						
+					} 										
+				}
+				public void onLeftSwipeAttempt(View v) {
+					int whichPlayer = (Integer)v.getTag();
+					ViewFlipper vf = (ViewFlipper) v.findViewById(R.id.ViewFlipperPlayerList);
+					if (vf != null) {
+						BikePoloPlayer player = players.get(whichPlayer);
+						player.switchViewAttempt(vf, LEFT);						
+					} 										
+				}
+
+			}; 
+			v.setTag(position);
+			v.setOnTouchListener(swiper);
+			teamSelect.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {				
 				public void onItemSelected(AdapterView<?> parent, View view, 
 			            int pos, long id) {
 					String teamSelected = (String)parent.getItemAtPosition(pos);
@@ -177,8 +195,8 @@ public class ShuffleMain extends FragmentActivity {
 			
 			// Fill view 2
 			playerNamev2.setText(playerNameValue);			
-			playerInGamev2.setChecked(ifPlaysValue);
-			playerInGamev2.setTag(position); // tag needed to find player			
+			playerInGamev2.setChecked(ifPlaysValue);			
+			playerInGamev2.setTag(position); // tag needed to find player
 			allTeamNames.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			teamSelect.setAdapter(allTeamNames);
 			teamSelect.setSelection(playerTeamPosition);

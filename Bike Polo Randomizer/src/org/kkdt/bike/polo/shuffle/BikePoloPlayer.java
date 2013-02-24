@@ -133,6 +133,21 @@ public class BikePoloPlayer {
 		}
 		modView = !modView; 
 	}
+
+	void switchViewAttempt(ViewFlipper vf, boolean left) {
+		if (vf != null) {
+			if (!left) {
+				Context context = vf.getContext();
+				Animation animFlipAttLeft = AnimationUtils.loadAnimation(context, R.anim.flip_attempt_left);
+				vf.getCurrentView().startAnimation(animFlipAttLeft);
+			} else {
+				Context context = vf.getContext();
+				Animation animFlipAttRight = AnimationUtils.loadAnimation(context, R.anim.flip_attempt_right);
+				vf.getCurrentView().startAnimation(animFlipAttRight);				
+			}
+		}
+	}
+
 	
 	String getTeamName() {
 		if (this.teamName == null) {
