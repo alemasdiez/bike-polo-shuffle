@@ -34,6 +34,7 @@ public class ShuffleMain extends FragmentActivity {
 	public static final String PLAYER_BLACK_LIST = "PLAYER_BLACK_LIST";
 	public static final String PLAYER_NUMBER = "PLAYER_NUMBER";
 	public static final String TEAM_NAME = "TEAM_NAME";
+	public static final String NO_TEAM = "";
 	
 	private static final String SUPER_ARIEL = "Super Ariel";
 	private static final String CURRENT_DIALOG = "CURRENT_DIALOG";
@@ -502,13 +503,24 @@ public class ShuffleMain extends FragmentActivity {
     }
     
     private List<BikePoloPlayer> drawPlayers(List<BikePoloPlayer> listPlayers,
-    		int playersToDraw) {
+    		int playersToDraw) { // function used to skip teamplay
+    	return drawPlayers(listPlayers, playersToDraw, false, NO_TEAM);
+    }
+    
+    private List<BikePoloPlayer> drawPlayers(List<BikePoloPlayer> listPlayers,
+    		int playersToDraw, boolean teamPlay, String teamName) {
     	List<BikePoloPlayer> playersInGame = new ArrayList<BikePoloPlayer>();    	
     	List<BikePoloPlayer> listActivePlayers = new ArrayList<BikePoloPlayer>();    	
     	for (int i=0;i<listPlayers.size();i++) {
     		BikePoloPlayer currPlayer = listPlayers.get(i);
     		if (currPlayer.ifPlays()) {
-    			listActivePlayers.add(currPlayer);
+    			if (teamPlay) { // if team draw, select players from given team
+    				if (currPlayer.getTeamName().equals(teamName)) {
+    					listActivePlayers.add(currPlayer);
+    				}
+    			} else {
+    				listActivePlayers.add(currPlayer);
+    			}
     		}
     	}
     	if (listActivePlayers.size() > 0) {
@@ -624,7 +636,6 @@ public class ShuffleMain extends FragmentActivity {
     		} else { // team draw
     			int teamSize = NUM_PLAYERS / 2;
     			List<BikePoloPlayer> playersInGame = drawPlayers(players, NUM_PLAYERS); // draw to check number of players available    			
-				int halfNumPlayers = (int)Math.ceil((double)playersInGame.size()/2);        
     			playersInGame = drawPlayers(players, 1); // draw 1 player for L team
     			List<BikePoloPlayer> remainingPlayers = new ArrayList<BikePoloPlayer>();
     			if (playersInGame.size() == 1) { // player found
@@ -632,19 +643,8 @@ public class ShuffleMain extends FragmentActivity {
     				nextGameR.clear();
     				BikePoloPlayer selectedPlayer = playersInGame.get(0);
     				String selectedTeam = selectedPlayer.getTeamName();
-    				for (BikePoloPlayer player : players) {
-    					if (player != selectedPlayer) {
-    						if (player.ifPlays()) {
-    							if (player.getTeamName().equals(selectedTeam)) {
-    								if (playersInGame.size() < teamSize) {
-    									if (playersInGame.size() < halfNumPlayers) {
-    										playersInGame.add(player);
-    									}
-    								}
-    							}
-    						}
-    					}
-    				}
+    				playersInGame.clear();
+    				playersInGame = drawPlayers(players, teamSize, true, selectedTeam); // draw people from given team
     				nextGameL.addAll(playersInGame);
     				remainingPlayers.addAll(players);
     				remainingPlayers.removeAll(nextGameL);
@@ -652,21 +652,7 @@ public class ShuffleMain extends FragmentActivity {
     				if (playersInGame.size() == 1) { // player found
     					selectedPlayer = playersInGame.get(0);
     					selectedTeam = selectedPlayer.getTeamName();
-    					for (BikePoloPlayer player : players) {
-    						if (player != selectedPlayer) {
-        						if (player.ifPlays()) {
-        							if (player.getTeamName().equals(selectedTeam)) {
-        								if (playersInGame.size() < teamSize) {
-        									if (playersInGame.size() < halfNumPlayers) {
-        										if (!nextGameL.contains(player)) {
-            										playersInGame.add(player);
-            									}
-        									}
-    									}
-    								}
-    							}    						
-    						}
-    					}
+        				playersInGame = drawPlayers(remainingPlayers, teamSize, true, selectedTeam); // draw people from given team
     					nextGameR.addAll(playersInGame);
     					remainingPlayers.removeAll(nextGameR);
     					if (nextGameL.size() < teamSize) { // draw additional players

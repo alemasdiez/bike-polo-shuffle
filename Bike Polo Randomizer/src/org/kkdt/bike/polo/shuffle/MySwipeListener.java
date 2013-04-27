@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 
 public abstract class MySwipeListener implements OnTouchListener {
-	private static final int SWIPE_MIN_DISTANCE = 50;
+	private static final int SWIPE_MIN_DISTANCE = 40;
 	private static final int SWIPE_MAX_OFF_PATH = 60;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 20;	
 	private final GestureDetector gdt;

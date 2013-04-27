@@ -9,10 +9,12 @@ package org.kkdt.bike.polo.shuffle;
 
 public final class R {
     public static final class anim {
-        public static final int flip_in_left=0x7f040000;
-        public static final int flip_in_right=0x7f040001;
-        public static final int flip_out_left=0x7f040002;
-        public static final int flip_out_right=0x7f040003;
+        public static final int flip_attempt_left=0x7f040000;
+        public static final int flip_attempt_right=0x7f040001;
+        public static final int flip_in_left=0x7f040002;
+        public static final int flip_in_right=0x7f040003;
+        public static final int flip_out_left=0x7f040004;
+        public static final int flip_out_right=0x7f040005;
     }
     public static final class array {
         public static final int arrayGameTime=0x7f070000;
