@@ -2,13 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#181718"
     android:gravity="left" >
 
     <ImageView 
         android:id="@+id/imageView1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:src="@drawable/logo_bpck"
+        android:src="@drawable/logo_ehbpc"
         android:scaleType="center"
         android:contentDescription="@string/logo_bpck"
          />

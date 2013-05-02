@@ -132,7 +132,7 @@ public class BikePoloShuffleApp extends Application
     		.setAutoCancel(autocancel)
     		.setOngoing(ongoing)
     		.setOnlyAlertOnce(true)    			
-    		.setPriority(Notification.PRIORITY_LOW)
+    		.setPriority(NotificationCompat.PRIORITY_LOW)
     		.setSmallIcon(R.drawable.ic_bar_new_game)
     		.setDefaults(defaults)
     		.setContentTitle(contentTitle)

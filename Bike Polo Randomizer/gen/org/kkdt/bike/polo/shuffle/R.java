@@ -40,6 +40,7 @@ public final class R {
         public static final int ic_remove_player=0x7f02000f;
         public static final int ic_team=0x7f020010;
         public static final int logo_bpck=0x7f020011;
+        public static final int logo_ehbpc=0x7f020012;
     }
     public static final class id {
         public static final int ViewFlipperPlayerList=0x7f0a000d;
